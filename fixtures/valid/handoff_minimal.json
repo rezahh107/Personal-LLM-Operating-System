@@ -1,0 +1,13 @@
+{
+  "task_goal": "Ask a downstream Skeptic model to challenge the candidate direction.",
+  "source_context": ["protocols/IDEA_MATURATION_PIPELINE.md"],
+  "accepted_facts": ["The user is the coordinator and not the technical verifier."],
+  "candidate_claims": ["The next PR should add a model-facing memory runtime."],
+  "quarantined_claims": [],
+  "evidence_refs": [],
+  "known_limits": ["This handoff does not prove technical correctness."],
+  "allowed_next_actions": ["Critique assumptions", "Identify missing enforcement"],
+  "forbidden_next_actions": ["Promote candidate claims to accepted memory"],
+  "required_output_schema": "none",
+  "stop_conditions": ["If the model needs technical proof that is not present, mark not_verifiable."]
+}
