@@ -1,0 +1,13 @@
+{
+  "task_goal": "Continue implementation.",
+  "source_context": [],
+  "accepted_facts": "This should be a list, not a string.",
+  "candidate_claims": [],
+  "quarantined_claims": [],
+  "evidence_refs": [],
+  "known_limits": [],
+  "allowed_next_actions": [],
+  "forbidden_next_actions": [],
+  "required_output_schema": "none",
+  "stop_conditions": []
+}
