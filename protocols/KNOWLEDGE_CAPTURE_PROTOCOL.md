@@ -21,6 +21,7 @@ Capture may be appropriate when the conversation produces:
 - a protocol improvement
 - an evidence-backed claim
 - a handoff that another model will use
+- a session continuity capsule that preserves reusable project state
 
 ## What must not be captured
 
@@ -35,6 +36,7 @@ Do not capture:
 - external facts without freshness handling
 - target repository content that was not reviewed for trust class
 - prior model output as evidence without separate verification
+- rendered handover Markdown as canonical state when structured state exists
 
 ## Candidate memory classification
 
@@ -47,6 +49,7 @@ Use these labels before promotion:
 - `candidate_failure_mode`
 - `candidate_repository_registry_update`
 - `candidate_protocol_improvement`
+- `candidate_session_continuity_capsule`
 - `candidate_quarantined_claim`
 
 ## Required capture metadata
@@ -104,6 +107,19 @@ epistemic_support: observed
 verification_status: tool_observed
 lifecycle_status: candidate
 promotion_gate: evidence from operating protocol and successful repeated use
+```
+
+### Session continuity capsule
+
+```yaml
+classification: candidate_session_continuity_capsule
+content: Structured session state that may help future models resume without losing evidence boundaries.
+trust_class: active_user_instruction
+governance_authority: advisory
+epistemic_support: source_supported
+verification_status: source_supported
+lifecycle_status: candidate
+promotion_gate: user approval plus successful handover intake
 ```
 
 ### Quarantined claim
