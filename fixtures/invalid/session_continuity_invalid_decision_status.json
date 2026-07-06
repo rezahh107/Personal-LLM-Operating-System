@@ -1,0 +1,39 @@
+{
+  "capsule_id": "SCAP-0005",
+  "capsule_version": "0.1.0",
+  "why_this_capsule_exists": "Invalid fixture: decision_status is outside the allowed enum.",
+  "relevant_user_operating_context": [],
+  "conversation_timeline": [],
+  "current_mental_model": "Decision status values must match the continuity schema enum.",
+  "confirmed_decisions": [
+    {
+      "id": "DEC-BAD-002",
+      "statement": "This decision status is intentionally invalid.",
+      "decision_status": "approved",
+      "truth_status": "evidence-backed",
+      "verification_status": "source_supported",
+      "evidence_refs": ["SRC-FIXTURE-001"],
+      "provenance_refs": [],
+      "limits": ["Invalid fixture: decision_status is not in the allowed enum."]
+    }
+  ],
+  "candidate_ideas": [],
+  "evidence_source_map": [
+    {
+      "id": "SRC-FIXTURE-001",
+      "type": "fixture",
+      "locator": "fixtures/invalid/session_continuity_invalid_decision_status.json",
+      "verification_status": "source_supported"
+    }
+  ],
+  "open_questions": [],
+  "active_risks_warnings": [],
+  "current_work_state": {},
+  "next_best_action": "Reject this capsule with a decision_status enum error.",
+  "do_not_repeat_or_assume": [],
+  "exact_resume_prompt": "This invalid fixture should not be used as a resume prompt.",
+  "candidate_memory_captures": [],
+  "completeness_check": {
+    "has_exact_resume_prompt": true
+  }
+}
