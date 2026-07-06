@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
+LIFECYCLE_MACHINE_PATH = ROOT / "schemas" / "claim-lifecycle.machine.json"
 
 CLAIM_STATES = {
     "draft",
@@ -56,7 +57,17 @@ def load_json(path: Path) -> tuple[Any | None, list[str]]:
         return None, [f"{path.relative_to(ROOT)}: invalid JSON: {exc}"]
 
 
-def require_keys(obj: dict[str, Any], keys: list[str], path: Path) -> list[str]:
+def require_object(obj: Any, path: Path) -> list[str]:
+    if not isinstance(obj, dict):
+        return [f"{path.relative_to(ROOT)}: expected JSON object"]
+    return []
+
+
+def require_keys(obj: Any, keys: list[str], path: Path) -> list[str]:
+    object_errors = require_object(obj, path)
+    if object_errors:
+        return object_errors
+
     errors: list[str] = []
     for key in keys:
         if key not in obj:
@@ -91,10 +102,11 @@ def has_execution_hint(text: str) -> str | None:
     return None
 
 
-def validate_claim(obj: dict[str, Any], path: Path) -> list[str]:
+def validate_claim(obj: Any, path: Path) -> list[str]:
     errors = require_keys(obj, ["id", "text", "state", "source", "scope"], path)
     if errors:
         return errors
+    assert isinstance(obj, dict)
 
     state = obj.get("state")
     source = obj.get("source")
@@ -128,10 +140,12 @@ def validate_claim(obj: dict[str, Any], path: Path) -> list[str]:
     return errors
 
 
-def validate_evidence(obj: dict[str, Any], path: Path) -> list[str]:
+def validate_evidence(obj: Any, path: Path) -> list[str]:
     errors = require_keys(obj, ["id", "type", "source_authority", "summary"], path)
     if errors:
         return errors
+    assert isinstance(obj, dict)
+
     if obj.get("source_authority") == "llm" and obj.get("type") in {"tool_output", "ci_result", "validator_result"}:
         errors.append(
             f"{path.relative_to(ROOT)}: LLM cannot be source authority for tool/CI/validator evidence"
@@ -139,7 +153,7 @@ def validate_evidence(obj: dict[str, Any], path: Path) -> list[str]:
     return errors
 
 
-def validate_handoff(obj: dict[str, Any], path: Path) -> list[str]:
+def validate_handoff(obj: Any, path: Path) -> list[str]:
     required = [
         "task_goal",
         "accepted_facts",
@@ -147,14 +161,27 @@ def validate_handoff(obj: dict[str, Any], path: Path) -> list[str]:
         "known_limits",
         "allowed_next_actions",
         "forbidden_next_actions",
+        "stop_conditions",
     ]
     errors = require_keys(obj, required, path)
     if errors:
         return errors
+    assert isinstance(obj, dict)
 
-    for key in ["accepted_facts", "candidate_claims", "known_limits", "allowed_next_actions", "forbidden_next_actions"]:
+    array_errors: list[str] = []
+    for key in [
+        "accepted_facts",
+        "candidate_claims",
+        "known_limits",
+        "allowed_next_actions",
+        "forbidden_next_actions",
+        "stop_conditions",
+    ]:
         if not isinstance(obj.get(key), list):
-            errors.append(f"{path.relative_to(ROOT)}: `{key}` must be an array")
+            array_errors.append(f"{path.relative_to(ROOT)}: `{key}` must be an array")
+
+    if array_errors:
+        return array_errors
 
     accepted_text = " ".join(str(item) for item in obj.get("accepted_facts", []))
     if any(word in accepted_text.lower() for word in ["proved", "ready", "fully verified"]):
@@ -173,27 +200,127 @@ def validate_handoff(obj: dict[str, Any], path: Path) -> list[str]:
     return errors
 
 
-def validate_memory_entry(obj: dict[str, Any], path: Path) -> list[str]:
+def validate_memory_entry(obj: Any, path: Path) -> list[str]:
     return require_keys(obj, ["id", "classification", "content", "status"], path)
 
 
-def validate_ledger(obj: dict[str, Any], path: Path) -> list[str]:
+def validate_ledger(obj: Any, path: Path) -> list[str]:
     errors = require_keys(obj, ["version", "entries"], path)
-    if not errors and not isinstance(obj.get("entries"), list):
+    if errors:
+        return errors
+    assert isinstance(obj, dict)
+
+    if not isinstance(obj.get("entries"), list):
         errors.append(f"{path.relative_to(ROOT)}: entries must be an array")
     return errors
 
 
-def validate_state_machine(obj: dict[str, Any], path: Path) -> list[str]:
+def load_lifecycle_machine() -> tuple[dict[str, Any] | None, list[str]]:
+    obj, errors = load_json(LIFECYCLE_MACHINE_PATH)
+    if errors:
+        return None, errors
+    object_errors = require_object(obj, LIFECYCLE_MACHINE_PATH)
+    if object_errors:
+        return None, object_errors
+    assert isinstance(obj, dict)
+    machine_errors = validate_state_machine(obj, LIFECYCLE_MACHINE_PATH)
+    if machine_errors:
+        return None, machine_errors
+    return obj, []
+
+
+def validate_state_machine(obj: Any, path: Path) -> list[str]:
     errors = require_keys(obj, ["states", "allowed_transitions", "forbidden_transitions"], path)
     if errors:
         return errors
+    assert isinstance(obj, dict)
+
+    if not isinstance(obj.get("states"), list):
+        return [f"{path.relative_to(ROOT)}: states must be an array"]
+    if not isinstance(obj.get("allowed_transitions"), list):
+        return [f"{path.relative_to(ROOT)}: allowed_transitions must be an array"]
+    if not isinstance(obj.get("forbidden_transitions"), list):
+        return [f"{path.relative_to(ROOT)}: forbidden_transitions must be an array"]
+
     states = set(obj.get("states", []))
     if not CLAIM_STATES.issubset(states):
         errors.append(f"{path.relative_to(ROOT)}: state machine is missing claim lifecycle states")
     for transition in obj.get("allowed_transitions", []):
+        if not isinstance(transition, dict):
+            errors.append(f"{path.relative_to(ROOT)}: allowed transition must be an object")
+            continue
         if transition.get("from") not in states or transition.get("to") not in states:
             errors.append(f"{path.relative_to(ROOT)}: transition references unknown state {transition}")
+    for transition in obj.get("forbidden_transitions", []):
+        if not isinstance(transition, dict):
+            errors.append(f"{path.relative_to(ROOT)}: forbidden transition must be an object")
+            continue
+        if transition.get("from") not in states or transition.get("to") not in states:
+            errors.append(f"{path.relative_to(ROOT)}: forbidden transition references unknown state {transition}")
+    return errors
+
+
+def validate_state_transition(obj: Any, path: Path, machine: dict[str, Any] | None = None) -> list[str]:
+    errors = require_keys(obj, ["id", "entity_type", "entity_id", "from", "to", "by", "reason", "timestamp"], path)
+    if errors:
+        return errors
+    assert isinstance(obj, dict)
+
+    if obj.get("entity_type") != "claim":
+        return errors
+
+    if machine is None:
+        machine, machine_errors = load_lifecycle_machine()
+        if machine_errors:
+            return machine_errors
+        assert machine is not None
+
+    from_state = obj.get("from")
+    to_state = obj.get("to")
+    states = set(machine.get("states", []))
+
+    if from_state not in states:
+        errors.append(f"{path.relative_to(ROOT)}: unknown from state `{from_state}`")
+    if to_state not in states:
+        errors.append(f"{path.relative_to(ROOT)}: unknown to state `{to_state}`")
+
+    for transition in machine.get("forbidden_transitions", []):
+        if transition.get("from") == from_state and transition.get("to") == to_state:
+            reason = transition.get("reason", "forbidden transition")
+            errors.append(f"{path.relative_to(ROOT)}: forbidden transition {from_state} -> {to_state}: {reason}")
+
+    allowed_transition = None
+    for transition in machine.get("allowed_transitions", []):
+        if transition.get("from") == from_state and transition.get("to") == to_state:
+            allowed_transition = transition
+            break
+
+    if allowed_transition is None:
+        errors.append(f"{path.relative_to(ROOT)}: transition {from_state} -> {to_state} is not allowed")
+    else:
+        for required_key in allowed_transition.get("requires", []):
+            if not obj.get(required_key):
+                errors.append(
+                    f"{path.relative_to(ROOT)}: transition {from_state} -> {to_state} requires `{required_key}`"
+                )
+
+    return errors
+
+
+def validate_state_transition_ledger(obj: Any, path: Path) -> list[str]:
+    errors = validate_ledger(obj, path)
+    if errors:
+        return errors
+    assert isinstance(obj, dict)
+
+    machine, machine_errors = load_lifecycle_machine()
+    if machine_errors:
+        return machine_errors
+    assert machine is not None
+
+    for index, entry in enumerate(obj.get("entries", [])):
+        entry_path = Path(f"{path.relative_to(ROOT)}#entries[{index}]")
+        errors.extend(validate_state_transition(entry, entry_path, machine))
     return errors
 
 
@@ -208,15 +335,19 @@ def validate_path(path: Path) -> list[str]:
 
     if name == "claim-lifecycle.machine.json":
         return validate_state_machine(obj, path)
+    if name == "STATE_TRANSITION_LEDGER.json":
+        return validate_state_transition_ledger(obj, path)
     if rel.startswith("ledgers/"):
         return validate_ledger(obj, path)
-    if "claim" in name and isinstance(obj, dict):
+    if "state_transition" in name or "transition" in name:
+        return validate_state_transition(obj, path)
+    if "claim" in name:
         return validate_claim(obj, path)
-    if "evidence" in name and isinstance(obj, dict):
+    if "evidence" in name:
         return validate_evidence(obj, path)
-    if "handoff" in name and isinstance(obj, dict):
+    if "handoff" in name:
         return validate_handoff(obj, path)
-    if "memory" in name and isinstance(obj, dict):
+    if "memory" in name:
         return validate_memory_entry(obj, path)
     return []
 
@@ -248,7 +379,7 @@ def validate_repository() -> list[str]:
     errors.extend(validate_path(ROOT / "schemas" / "claim-lifecycle.machine.json"))
 
     for path in sorted((ROOT / "ledgers").glob("*.json")):
-        errors.extend(validate_ledger(load_json(path)[0], path))
+        errors.extend(validate_path(path))
 
     errors.extend(validate_fixtures())
     return errors
