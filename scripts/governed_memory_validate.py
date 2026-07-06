@@ -327,7 +327,11 @@ def validate_transition_ledger(obj: Any, path: Path) -> list[str]:
     return errors
 
 
-def validate_typed_json(obj: Any, path: Path) -> list[str]:
+def validate_path(path: Path) -> list[str]:
+    obj, errors = load_json(path)
+    if errors:
+        return errors
+    assert obj is not None
     name = path.name
     path_text = rel(path)
     if path_text == "registries/REPOSITORY_REGISTRY.json" or name.startswith("repository_registry"):
@@ -356,48 +360,62 @@ def validate_typed_json(obj: Any, path: Path) -> list[str]:
     return []
 
 
-def validate_path(path: Path) -> list[str]:
-    obj, errors = load_json(path)
-    if errors:
-        return errors
-    assert obj is not None
-    path_text = rel(path)
-    if path_text.startswith("fixtures/invalid/"):
-        expected_errors = validate_typed_json(obj, path)
-        if not expected_errors:
-            return [f"{rel(path)}: invalid fixture unexpectedly passed validation"]
-        return []
-    return validate_typed_json(obj, path)
-
-
-def iter_runtime_paths() -> list[Path]:
-    paths: set[Path] = set()
-    if MACHINE_PATH.exists():
-        paths.add(MACHINE_PATH)
-    for directory in [ROOT / "ledgers", ROOT / "registries", ROOT / "fixtures"]:
-        if directory.exists():
-            paths.update(path for path in directory.rglob("*.json") if ".git" not in path.parts)
-    return sorted(paths)
-
-
-def run_validate() -> int:
+def parse_json_directory(directory: str) -> list[str]:
     errors: list[str] = []
-    for path in iter_runtime_paths():
+    base = ROOT / directory
+    if not base.exists():
+        return errors
+    for path in sorted(base.glob("*.json")):
+        _, path_errors = load_json(path)
+        errors.extend(path_errors)
+    return errors
+
+
+def validate_fixtures() -> list[str]:
+    errors: list[str] = []
+    valid_dir = ROOT / "fixtures" / "valid"
+    if valid_dir.exists():
+        for path in sorted(valid_dir.glob("*.json")):
+            path_errors = validate_path(path)
+            if path_errors:
+                errors.extend([f"valid fixture failed: {error}" for error in path_errors])
+    invalid_dir = ROOT / "fixtures" / "invalid"
+    if invalid_dir.exists():
+        for path in sorted(invalid_dir.glob("*.json")):
+            path_errors = validate_path(path)
+            if not path_errors:
+                errors.append(f"invalid fixture unexpectedly passed: {rel(path)}")
+    return errors
+
+
+def validate_repository() -> list[str]:
+    errors: list[str] = []
+    for directory in ["schemas", "ledgers", "templates", "registries"]:
+        errors.extend(parse_json_directory(directory))
+    errors.extend(validate_path(MACHINE_PATH))
+    for path in sorted((ROOT / "ledgers").glob("*.json")):
         errors.extend(validate_path(path))
-    if errors:
-        print("Governed memory validation failed:")
-        for error in errors:
-            print(f"- {error}")
-        return 1
-    print("Governed memory validation passed.")
-    return 0
+    for path in sorted((ROOT / "registries").glob("*.json")):
+        errors.extend(validate_path(path))
+    errors.extend(validate_fixtures())
+    return errors
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Validate governed memory runtime files.")
-    parser.add_argument("command", nargs="?", default="validate", choices=["validate"])
-    parser.parse_args(argv)
-    return run_validate()
+    parser = argparse.ArgumentParser(description="Validate governed memory artifacts")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+    subparsers.add_parser("validate", help="validate repository memory artifacts and fixtures")
+    args = parser.parse_args(argv)
+    if args.command == "validate":
+        errors = validate_repository()
+        if errors:
+            print("Governed memory validation failed:")
+            for error in errors:
+                print(f"- {error}")
+            return 1
+        print("Governed memory validation passed.")
+        return 0
+    return 2
 
 
 if __name__ == "__main__":
