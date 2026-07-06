@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/claim-lifecycle.machine.json",
+  "title": "Claim Lifecycle State Machine",
+  "version": "0.1.0",
+  "states": [
+    "draft",
+    "candidate",
+    "challenged",
+    "validated",
+    "accepted",
+    "quarantined",
+    "deprecated",
+    "rejected"
+  ],
+  "allowed_transitions": [
+    {"from": "draft", "to": "candidate", "requires": ["source", "scope"]},
+    {"from": "candidate", "to": "challenged", "requires": ["challenge_reason"]},
+    {"from": "challenged", "to": "validated", "requires": ["validation_basis"]},
+    {"from": "validated", "to": "accepted", "requires": ["promotion_basis"]},
+    {"from": "candidate", "to": "quarantined", "requires": ["quarantine_reason"]},
+    {"from": "challenged", "to": "quarantined", "requires": ["quarantine_reason"]},
+    {"from": "validated", "to": "quarantined", "requires": ["quarantine_reason"]},
+    {"from": "accepted", "to": "deprecated", "requires": ["deprecation_reason"]},
+    {"from": "candidate", "to": "rejected", "requires": ["rejection_reason"]},
+    {"from": "challenged", "to": "rejected", "requires": ["rejection_reason"]},
+    {"from": "quarantined", "to": "candidate", "requires": ["reopen_reason"]}
+  ],
+  "forbidden_transitions": [
+    {"from": "draft", "to": "accepted", "reason": "Raw model or user text cannot become accepted memory without lifecycle gates."},
+    {"from": "candidate", "to": "accepted", "reason": "Candidate claims require validation before acceptance."},
+    {"from": "rejected", "to": "accepted", "reason": "Rejected claims must be reopened as candidate first."},
+    {"from": "quarantined", "to": "accepted", "reason": "Quarantined claims require review and validation before acceptance."}
+  ]
+}
