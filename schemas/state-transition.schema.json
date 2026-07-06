@@ -9,11 +9,20 @@
     "id": {"type": "string"},
     "entity_type": {"enum": ["claim", "memory_entry", "handoff", "domain_adapter", "protocol"]},
     "entity_id": {"type": "string"},
-    "from": {"type": "string"},
-    "to": {"type": "string"},
+    "from": {"enum": ["draft", "candidate", "challenged", "validated", "accepted", "quarantined", "deprecated", "rejected"]},
+    "to": {"enum": ["draft", "candidate", "challenged", "validated", "accepted", "quarantined", "deprecated", "rejected"]},
     "by": {"enum": ["user", "llm", "tool", "validator", "ci", "automation"]},
     "reason": {"type": "string", "minLength": 1},
     "evidence_refs": {"type": "array", "items": {"type": "string"}, "default": []},
+    "source": {"type": "string"},
+    "scope": {"type": "string"},
+    "challenge_reason": {"type": "string"},
+    "validation_basis": {"type": "string"},
+    "promotion_basis": {"type": "string"},
+    "quarantine_reason": {"type": "string"},
+    "deprecation_reason": {"type": "string"},
+    "rejection_reason": {"type": "string"},
+    "reopen_reason": {"type": "string"},
     "timestamp": {"type": "string"}
   }
 }
