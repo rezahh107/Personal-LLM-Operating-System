@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -62,6 +61,17 @@ def require_keys(obj: dict[str, Any], keys: list[str], path: Path) -> list[str]:
     for key in keys:
         if key not in obj:
             errors.append(f"{path.relative_to(ROOT)}: missing required key `{key}`")
+    return errors
+
+
+def parse_json_directory(directory: str) -> list[str]:
+    errors: list[str] = []
+    base = ROOT / directory
+    if not base.exists():
+        return errors
+    for path in sorted(base.glob("*.json")):
+        _, path_errors = load_json(path)
+        errors.extend(path_errors)
     return errors
 
 
@@ -233,8 +243,12 @@ def validate_repository() -> list[str]:
     errors: list[str] = []
 
     for directory in ["schemas", "ledgers", "templates"]:
-        for path in sorted((ROOT / directory).glob("*.json")):
-            errors.extend(validate_path(path))
+        errors.extend(parse_json_directory(directory))
+
+    errors.extend(validate_path(ROOT / "schemas" / "claim-lifecycle.machine.json"))
+
+    for path in sorted((ROOT / "ledgers").glob("*.json")):
+        errors.extend(validate_ledger(load_json(path)[0], path))
 
     errors.extend(validate_fixtures())
     return errors
