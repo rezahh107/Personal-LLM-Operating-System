@@ -21,7 +21,8 @@ The user is the coordinator and goal owner, not the technical verifier for most 
 3. **Model Workforce Architecture** — clear model roles such as Inspector, Skeptic, Builder, Reporter, and Handoff Writer.
 4. **Claim Lifecycle** — every important assertion moves through draft, candidate, challenged, validated, accepted, quarantined, deprecated, or rejected states.
 5. **Handoff Contracts** — model outputs must preserve evidence, uncertainty, limits, and allowed next actions for downstream models.
-6. **Domain Adapters** — audit, GitHub repair, prompt engineering, image workflows, and other domains inherit the parent protocol.
+6. **Governed Memory Runtime** — model-facing scripts, fixtures, ledgers, and CI checks prevent the repository from becoming a prose-only policy book.
+7. **Domain Adapters** — audit, GitHub repair, prompt engineering, image workflows, and other domains inherit the parent protocol.
 
 ## Start here
 
@@ -36,10 +37,11 @@ protocols/IDEA_MATURATION_PIPELINE.md when the topic is new or strategic
 ## Current status
 
 ```yaml
-status: foundation_draft
+status: governed_memory_runtime_mvp
 scope: personal_llm_orchestration
 primary_user_role: coordinator_orchestrator
 technical_verifier_assumption: false
+user_runs_cli_manually: false
 ```
 
 This repository is intentionally foundation-first. Domain-specific systems, including audit and post-merge scanning, should be added as adapters after the parent behavior protocol stabilizes.
