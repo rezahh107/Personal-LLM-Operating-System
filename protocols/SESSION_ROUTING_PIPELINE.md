@@ -9,9 +9,9 @@ Purpose: classify the user's request and load the smallest useful context.
 3. Select response depth from `protocols/RESPONSE_DEPTH_POLICY.md`.
 4. Select context through `protocols/CONTEXT_LOADING_POLICY.md`.
 5. Classify instruction and evidence authority through `protocols/INSTRUCTION_TRUST_POLICY.md`.
-6. Apply claim-specific evidence requirements through `protocols/VERIFICATION_PROTOCOL.md` when the task makes technical, source, CI, version, architecture, or security claims.
+6. Apply claim-specific evidence requirements through `protocols/VERIFICATION_PROTOCOL.md` when the task makes technical, source, CI, version, architecture, continuity, or security claims.
 7. Produce output in the expected behavior for the route.
-8. Recommend knowledge capture only when the result is memory-worthy.
+8. Recommend knowledge capture or continuity capture only when the result is memory-worthy or context loss would materially harm continuation.
 
 ## Status dimensions
 
@@ -197,6 +197,92 @@ Output behavior:
 - evidence
 - recommended action
 - clear final verdict
+
+### session continuity
+
+Use when the user asks to close, compact, transfer, resume, or continue a long session, or when context loss would materially harm continuation.
+
+Load:
+
+- `protocols/SESSION_CONTINUITY_PROTOCOL.md`
+- `protocols/HANDOFF_CONTRACT.md`
+- `protocols/KNOWLEDGE_CAPTURE_PROTOCOL.md`
+- `protocols/INSTRUCTION_TRUST_POLICY.md`
+- `protocols/VERIFICATION_PROTOCOL.md`
+- `protocols/PROVENANCE_POLICY.md`
+- `templates/session-continuity-capsule.md`
+- `templates/session-resume-prompt.md`
+
+Do not:
+
+- flatten the conversation into a polished summary
+- promote candidate ideas into accepted decisions
+- convert not-run validation into passed validation
+- claim token-limit knowledge unless the platform exposes it
+- make Markdown the canonical source when structured state exists
+
+Output behavior:
+
+- structured session continuity capsule
+- rendered Markdown view when useful
+- exact resume prompt
+- candidate memory captures only, not automatic promotion
+- explicit `insufficient_evidence`, `not_checked`, active risks, and next best action
+
+### project handover
+
+Use when the user asks to transfer a project, hand over a repository, package project knowledge, or prepare a durable continuation package beyond the current conversation.
+
+Load:
+
+- `protocols/PROJECT_CONTINUITY_PROTOCOL.md`
+- `protocols/HANDOVER_INTAKE_PROTOCOL.md`
+- `templates/HANDOVER-MANIFEST.yaml`
+- `protocols/INSTRUCTION_TRUST_POLICY.md`
+- `protocols/VERIFICATION_PROTOCOL.md`
+- `protocols/PROVENANCE_POLICY.md`
+- repository transfer evidence when available
+
+Do not:
+
+- treat a source archive as a complete handover
+- implement ZIP generation unless a future scoped task adds it
+- invent hashes, CI status, repository diffs, or validation evidence
+- make rendered Markdown canonical
+
+Output behavior:
+
+- structured handover contract or manifest
+- four-layer handover map: Repository Transfer, Durable Project Knowledge, Current Operational State, Evidence and Integrity
+- authority map
+- validation/not-run status
+- next safe action
+
+### handover intake
+
+Use when the user provides a session continuity capsule, handover package, manifest, or resume prompt from another chat or model.
+
+Load:
+
+- `protocols/HANDOVER_INTAKE_PROTOCOL.md`
+- `protocols/SESSION_CONTINUITY_PROTOCOL.md` if the package is session-scoped
+- `protocols/PROJECT_CONTINUITY_PROTOCOL.md` if the package is project-scoped
+- the structured state before rendered Markdown views
+
+Do not:
+
+- treat prior model output as proof
+- ignore conflicts between structured state and rendered views
+- continue from a candidate action as if it were accepted
+
+Output behavior:
+
+- compact intake report
+- accepted decisions
+- candidate items
+- evidence gaps
+- active blockers
+- next action
 
 ### document generation
 
