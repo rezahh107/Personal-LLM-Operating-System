@@ -1,0 +1,10 @@
+{
+  "id": "EVD-YYYY-NNN",
+  "type": "repo_file",
+  "source_authority": "repo",
+  "summary": "Describe what this evidence supports.",
+  "uri": "repo:path-or-url",
+  "commit_sha": null,
+  "hash": null,
+  "created_at": "YYYY-MM-DDTHH:MM:SSZ"
+}
