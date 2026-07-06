@@ -128,6 +128,59 @@ def validate_ledger(obj: Any, path: Path) -> list[str]:
     return errors
 
 
+def validate_repository_registry(obj: Any, path: Path) -> list[str]:
+    errors = require_keys(obj, path, ["version", "status", "principle", "entries"])
+    if errors:
+        return errors
+    assert isinstance(obj, dict)
+
+    if not isinstance(obj.get("entries"), list):
+        errors.append(f"{rel(path)}: entries must be an array")
+        return errors
+
+    required_entry_keys = [
+        "domain",
+        "description",
+        "primary_repo",
+        "related_repos",
+        "load_rule",
+        "when_to_use",
+        "when_not_to_use",
+        "status",
+        "notes",
+    ]
+
+    seen_domains: set[str] = set()
+    for index, entry in enumerate(obj.get("entries", [])):
+        entry_path = Path(f"{rel(path)}#entries[{index}]")
+        entry_errors = require_keys(entry, entry_path, required_entry_keys)
+        if entry_errors:
+            errors.extend(entry_errors)
+            continue
+        assert isinstance(entry, dict)
+
+        domain = entry.get("domain")
+        if not isinstance(domain, str) or not domain:
+            errors.append(f"{rel(entry_path)}: domain must be a non-empty string")
+        elif domain in seen_domains:
+            errors.append(f"{rel(entry_path)}: duplicate domain `{domain}`")
+        else:
+            seen_domains.add(domain)
+
+        if entry.get("primary_repo") is not None and not isinstance(entry.get("primary_repo"), str):
+            errors.append(f"{rel(entry_path)}: primary_repo must be a string or null")
+
+        if not isinstance(entry.get("related_repos"), list):
+            errors.append(f"{rel(entry_path)}: related_repos must be an array")
+        else:
+            for repo_index, repo_entry in enumerate(entry.get("related_repos", [])):
+                repo_path = Path(f"{rel(entry_path)}.related_repos[{repo_index}]")
+                repo_errors = require_keys(repo_entry, repo_path, ["repo", "relationship", "verification"])
+                if repo_errors:
+                    errors.extend(repo_errors)
+    return errors
+
+
 def load_machine() -> tuple[dict[str, Any] | None, list[str]]:
     machine, errors = load_json(MACHINE_PATH)
     if errors:
@@ -215,6 +268,8 @@ def validate_path(path: Path) -> list[str]:
     name = path.name
     path_text = rel(path)
 
+    if path_text == "registries/REPOSITORY_REGISTRY.json":
+        return validate_repository_registry(obj, path)
     if name == "claim-lifecycle.machine.json":
         return validate_state_machine(obj, path)
     if name == "STATE_TRANSITION_LEDGER.json":
@@ -265,10 +320,12 @@ def validate_fixtures() -> list[str]:
 
 def validate_repository() -> list[str]:
     errors: list[str] = []
-    for directory in ["schemas", "ledgers", "templates"]:
+    for directory in ["schemas", "ledgers", "templates", "registries"]:
         errors.extend(parse_json_directory(directory))
     errors.extend(validate_path(MACHINE_PATH))
     for path in sorted((ROOT / "ledgers").glob("*.json")):
+        errors.extend(validate_path(path))
+    for path in sorted((ROOT / "registries").glob("*.json")):
         errors.extend(validate_path(path))
     errors.extend(validate_fixtures())
     return errors
