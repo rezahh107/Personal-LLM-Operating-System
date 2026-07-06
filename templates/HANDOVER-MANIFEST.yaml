@@ -1,0 +1,61 @@
+# Rendered template. The structured handover manifest is the canonical state.
+
+manifest_version: "0.1.0"
+handover_type: project_handover
+project_id: ""
+created_at: ""
+created_by: ""
+canonical_state:
+  format: structured_handover_state
+  locator: ""
+  content_hash: null
+rendered_views:
+  - path: templates/session-continuity-capsule.md
+    role: human_readable_view
+    canonical: false
+included_layers:
+  repository_transfer:
+    included: false
+    locator: null
+    verification_status: not_checked
+  durable_project_knowledge:
+    included: false
+    locator: null
+    verification_status: not_checked
+  current_operational_state:
+    included: false
+    locator: null
+    verification_status: not_checked
+  evidence_and_integrity:
+    included: false
+    locator: null
+    verification_status: not_checked
+instruction_authority:
+  start_here:
+    authority: handover_control_document
+  frozen_contract:
+    authority: project_frozen_contract
+  audit_attachment:
+    authority: evidence_only
+  web_capture:
+    authority: evidence_only
+  prior_model_output:
+    authority: none_unless_verified
+truthfulness:
+  allowed_truth_status:
+    - evidence-backed
+    - derived_with_lineage
+    - explicitly_proposed
+    - connected_to_structured_gap
+    - not_applicable
+  insufficient_evidence_policy: preserve_and_block_promotion
+validation:
+  commands:
+    - command: python3 scripts/validate_foundation.py
+      executed: false
+      verification_status: not_checked
+    - command: python3 scripts/governed_memory_validate.py validate
+      executed: false
+      verification_status: not_checked
+known_gaps: []
+next_safe_action: ""
