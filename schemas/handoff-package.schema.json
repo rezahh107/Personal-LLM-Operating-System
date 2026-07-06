@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/handoff-package.schema.json",
+  "title": "Handoff Package",
+  "type": "object",
+  "required": ["task_goal", "accepted_facts", "candidate_claims", "known_limits", "allowed_next_actions", "forbidden_next_actions"],
+  "additionalProperties": false,
+  "properties": {
+    "task_goal": {"type": "string"},
+    "source_context": {"type": "array", "items": {"type": "string"}},
+    "accepted_facts": {"type": "array", "items": {"type": "string"}},
+    "candidate_claims": {"type": "array", "items": {"type": "string"}},
+    "quarantined_claims": {"type": "array", "items": {"type": "string"}},
+    "evidence_refs": {"type": "array", "items": {"type": "string"}},
+    "known_limits": {"type": "array", "items": {"type": "string"}},
+    "allowed_next_actions": {"type": "array", "items": {"type": "string"}},
+    "forbidden_next_actions": {"type": "array", "items": {"type": "string"}},
+    "required_output_schema": {"type": "string"},
+    "stop_conditions": {"type": "array", "items": {"type": "string"}}
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/claim.schema.json",
+  "title": "Claim",
+  "type": "object",
+  "required": ["id", "text", "state", "source", "scope"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {"type": "string"},
+    "text": {"type": "string", "minLength": 1},
+    "state": {"enum": ["draft", "candidate", "challenged", "validated", "accepted", "quarantined", "deprecated", "rejected"]},
+    "source": {"enum": ["user", "llm", "tool", "validator", "ci", "web", "repo"]},
+    "scope": {"type": "string"},
+    "evidence_refs": {"type": "array", "items": {"type": "string"}, "default": []},
+    "quarantine_reason": {"type": "string"},
+    "created_at": {"type": "string"}
+  }
+}

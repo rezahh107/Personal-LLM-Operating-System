@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/evidence.schema.json",
+  "title": "Evidence",
+  "type": "object",
+  "required": ["id", "type", "source_authority", "summary"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {"type": "string"},
+    "type": {"enum": ["repo_file", "tool_output", "validator_result", "ci_result", "web_source", "user_statement", "model_inference"]},
+    "source_authority": {"enum": ["repo", "tool", "validator", "ci", "web", "user", "llm"]},
+    "summary": {"type": "string"},
+    "uri": {"type": "string"},
+    "commit_sha": {"type": "string"},
+    "hash": {"type": "string"},
+    "created_at": {"type": "string"}
+  }
+}
