@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/behavioral-rule.schema.json",
+  "title": "Behavioral Rule",
+  "type": "object",
+  "required": ["rule_id", "concept", "risk", "status"],
+  "additionalProperties": false,
+  "properties": {
+    "rule_id": {"type": "string"},
+    "concept": {"type": "string"},
+    "risk": {"enum": ["Critical", "High", "Medium", "Low"]},
+    "schema_carrier": {"type": ["string", "null"]},
+    "validator_rule": {"type": ["string", "null"]},
+    "valid_fixture": {"type": ["string", "null"]},
+    "invalid_fixture": {"type": ["string", "null"]},
+    "ci_step": {"type": ["string", "null"]},
+    "downstream_contract": {"type": ["string", "null"]},
+    "status": {"enum": ["prose_only", "schema_backed", "validator_backed", "fixture_tested", "ci_enforced", "downstream_contract_enforced"]}
+  }
+}

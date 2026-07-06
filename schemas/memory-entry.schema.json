@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/memory-entry.schema.json",
+  "title": "Memory Entry",
+  "type": "object",
+  "required": ["id", "classification", "content", "status"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {"type": "string"},
+    "classification": {"enum": ["accepted_protocol", "accepted_decision", "validated_claim", "candidate_claim", "quarantined_claim", "deprecated_memory", "domain_context", "transient_report"]},
+    "content": {"type": "string"},
+    "status": {"enum": ["active", "candidate", "quarantined", "deprecated", "rejected"]},
+    "source_refs": {"type": "array", "items": {"type": "string"}},
+    "created_at": {"type": "string"}
+  }
+}
