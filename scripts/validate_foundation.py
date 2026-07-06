@@ -68,6 +68,8 @@ JSON_FILES = [
     "fixtures/valid/session_continuity_minimal.json",
     "fixtures/invalid/session_continuity_missing_resume_prompt.json",
     "fixtures/invalid/session_continuity_unverified_claim_as_decision.json",
+    "fixtures/invalid/session_continuity_confirmed_decisions_not_array.json",
+    "fixtures/invalid/session_continuity_invalid_decision_status.json",
 ]
 
 BANNED_ASSURANCE_PHRASES = [
