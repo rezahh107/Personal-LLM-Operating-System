@@ -1,0 +1,126 @@
+{
+  "version": "0.1.0",
+  "status": "candidate_first_map",
+  "last_reviewed": "2026-07-06",
+  "principle": "The repository is the starting context, not the prison.",
+  "entries": [
+    {
+      "domain": "personal_llm_os",
+      "description": "Personal operating layer for booting, routing, governing, and reusing work with language models.",
+      "primary_repo": "rezahh107/Personal-LLM-Operating-System",
+      "related_repos": [],
+      "load_rule": "Load this repository first when the user asks to boot a model session, route a request, preserve operating memory, or design personal LLM workflow rules.",
+      "when_to_use": "Use for session boot, user operating profile, response depth, context routing, knowledge capture, memory governance, and repository registry lookup.",
+      "when_not_to_use": "Do not treat it as a replacement for live GitHub inspection, web/current sources, attached files, or domain repositories.",
+      "status": "active",
+      "notes": "Repository existence, default branch, and concept were verified from the live connector and current README."
+    },
+    {
+      "domain": "prompt_engineering",
+      "description": "Prompt engineering workflow and prompt-as-code support.",
+      "primary_repo": "rezahh107/Prompt-Pipeline",
+      "related_repos": [
+        {
+          "repo": "rezahh107/Personal-LLM-Operating-System",
+          "relationship": "parent operating layer for routing and memory policy",
+          "verification": "connector_verified",
+          "notes": "Use this repository for profile, routing, and governance before domain-specific prompt work."
+        }
+      ],
+      "load_rule": "Load after boot when the user asks for serious prompt design, prompt hardening, prompt review, or reusable prompt workflows.",
+      "when_to_use": "Use for copy-ready prompts, prompt standards, prompt critique, or prompt pipeline work.",
+      "when_not_to_use": "Do not load for casual wording help unless the user wants a reusable or repository-grade prompt.",
+      "status": "active",
+      "notes": "Primary repository was found through the installed connector; purpose is based on its repository description: Prompt Engineering as Code."
+    },
+    {
+      "domain": "repository_audit",
+      "description": "Repository inspection, consistency review, PR review, and evidence-led audit work.",
+      "primary_repo": null,
+      "related_repos": [
+        {
+          "repo": "rezahh107/Personal-LLM-Operating-System",
+          "relationship": "parent operating layer for audit routing and evidence discipline",
+          "verification": "connector_verified",
+          "notes": "The exact audit-domain implementation repository has not been verified in this registry pass."
+        }
+      ],
+      "load_rule": "Start from this operating repository, then inspect the target repository live through GitHub connector before producing findings.",
+      "when_to_use": "Use when the user asks to inspect a repository, PR, issue, schema, workflow, validator, or documentation quality.",
+      "when_not_to_use": "Do not use stale memory instead of reading the target repository state.",
+      "status": "candidate",
+      "notes": "Domain is supported by current repository concepts, but no separate primary audit repository was verified during this pass."
+    },
+    {
+      "domain": "github_repair",
+      "description": "GitHub repository repair, workflow hardening, CI evidence review, and patch-oriented maintenance.",
+      "primary_repo": "rezahh107/GitHub-Actions-Pipeline",
+      "related_repos": [
+        {
+          "repo": "rezahh107/Personal-LLM-Operating-System",
+          "relationship": "parent operating layer for routing, scope control, and user-not-technical-verifier policy",
+          "verification": "connector_verified",
+          "notes": "Use the parent repository for session behavior before domain repair work."
+        }
+      ],
+      "load_rule": "Use only when the task is specifically about GitHub Actions, CI, workflow validation, or repository repair. Also inspect the target repository live.",
+      "when_to_use": "Use for CI hardening, workflow review, PR validation evidence, or GitHub repair prompts.",
+      "when_not_to_use": "Do not assume this repository covers all GitHub repair domains beyond what is inspected live.",
+      "status": "candidate",
+      "notes": "Primary repository was found through the installed connector; purpose is inferred from its name and matching description."
+    },
+    {
+      "domain": "elementor_v4",
+      "description": "Elementor V4 architecture, workbook, builder, responsive, constructability, and project-gate workflows.",
+      "primary_repo": "rezahh107/EV4-Workbook-Jinja",
+      "related_repos": [
+        {
+          "repo": "rezahh107/EV4-Architect-Repo",
+          "relationship": "Elementor V4 architecture repository",
+          "verification": "connector_verified",
+          "notes": "Purpose is based on repository name and description."
+        },
+        {
+          "repo": "rezahh107/EV4-Constructability-Engineer-Repo",
+          "relationship": "Constructability review repository",
+          "verification": "connector_verified",
+          "notes": "Purpose is based on repository name and description."
+        },
+        {
+          "repo": "rezahh107/EV4-Builder-Assistant-Repo",
+          "relationship": "Builder assistant repository",
+          "verification": "connector_verified",
+          "notes": "Purpose is based on repository name and description."
+        },
+        {
+          "repo": "rezahh107/EV4-Responsive-Architect",
+          "relationship": "Responsive architecture repository",
+          "verification": "connector_verified",
+          "notes": "Purpose is based on repository name and description."
+        },
+        {
+          "repo": "rezahh107/EV4-Project-Gate",
+          "relationship": "Project gate / transition repository",
+          "verification": "connector_verified",
+          "notes": "Purpose is based on repository name and description."
+        }
+      ],
+      "load_rule": "Load when the user asks about Elementor V4, EV4 architecture, workbook generation, builder workflows, responsive design, constructability, or project-gate transitions.",
+      "when_to_use": "Use for EV4 domain work after boot and routing, then inspect the specific target repository live.",
+      "when_not_to_use": "Do not assume one EV4 repository is canonical for another without inspecting the current target and any shared contract/status docs.",
+      "status": "active",
+      "notes": "Repositories were found through installed connector search; specific file-level purposes should be verified before high-impact work."
+    },
+    {
+      "domain": "image_workflow",
+      "description": "Image generation, image editing, portrait workflow, and visual prompt operations.",
+      "primary_repo": null,
+      "related_repos": [],
+      "load_rule": "Use this operating repository for user profile and routing, then use attached images, explicit user instructions, and any future image adapter if added.",
+      "when_to_use": "Use when the user asks for image generation, image editing, visual prompt creation, headshot selection, or visual workflow documentation.",
+      "when_not_to_use": "Do not infer identity or sensitive visual changes without explicit user instruction and available image context.",
+      "status": "no_verified_repo",
+      "notes": "The domain is present in the current repository concept, but no dedicated image-workflow repository was verified during this pass."
+    }
+  ]
+}
