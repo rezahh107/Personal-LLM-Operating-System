@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/handover-manifest.schema.json",
+  "title": "Handover Manifest",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["manifest_version", "handover_type", "project_id", "canonical_state", "instruction_authority", "validation"],
+  "properties": {
+    "manifest_version": {"type": "string"},
+    "handover_type": {"type": "string", "enum": ["repository_transfer", "project_handover", "session_continuity"]},
+    "project_id": {"type": "string"},
+    "created_at": {"type": "string"},
+    "created_by": {"type": "string"},
+    "canonical_state": {
+      "type": "object",
+      "required": ["format", "locator"],
+      "properties": {
+        "format": {"type": "string"},
+        "locator": {"type": "string"},
+        "content_hash": {"type": ["string", "null"]}
+      }
+    },
+    "instruction_authority": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["authority"],
+        "properties": {
+          "authority": {
+            "type": "string",
+            "enum": ["handover_control_document", "project_frozen_contract", "evidence_only", "none_unless_verified"]
+          }
+        }
+      }
+    },
+    "validation": {"type": "object"}
+  }
+}
