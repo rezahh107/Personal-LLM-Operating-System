@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/state-transition.schema.json",
+  "title": "State Transition",
+  "type": "object",
+  "required": ["id", "entity_type", "entity_id", "from", "to", "by", "reason", "timestamp"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {"type": "string"},
+    "entity_type": {"enum": ["claim", "memory_entry", "handoff", "domain_adapter", "protocol"]},
+    "entity_id": {"type": "string"},
+    "from": {"type": "string"},
+    "to": {"type": "string"},
+    "by": {"enum": ["user", "llm", "tool", "validator", "ci", "automation"]},
+    "reason": {"type": "string", "minLength": 1},
+    "evidence_refs": {"type": "array", "items": {"type": "string"}, "default": []},
+    "timestamp": {"type": "string"}
+  }
+}
