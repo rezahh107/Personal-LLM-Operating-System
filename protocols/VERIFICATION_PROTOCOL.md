@@ -18,6 +18,8 @@ Use these claim types for verification-sensitive work:
 - `security_checks_passed`
 - `latest_version`
 - `deterministic_behavior`
+- `handover_state_complete`
+- `session_continuity_preserved`
 
 ## Verification status vocabulary
 
@@ -35,6 +37,21 @@ verification_status:
   - insufficient_evidence
 ```
 
+## Continuity truth status vocabulary
+
+Use these truth statuses for factual project claims inside handover packages and session continuity capsules:
+
+```yaml
+truth_status:
+  - evidence-backed
+  - derived_with_lineage
+  - explicitly_proposed
+  - connected_to_structured_gap
+  - not_applicable
+```
+
+Do not place `explicitly_proposed` or `connected_to_structured_gap` claims inside confirmed decisions unless the decision explicitly records that the factual claim is not accepted.
+
 ## Minimum evidence matrix
 
 | Claim type | Minimum evidence |
@@ -49,6 +66,8 @@ verification_status:
 | `security_checks_passed` | named check, tool/source, scope, revision, environment, and exclusions |
 | `latest_version` | source URL/name, retrieval timestamp, compared version, and freshness risk |
 | `deterministic_behavior` | repeated runs, same input, same environment, observed outputs, and nondeterminism limits |
+| `handover_state_complete` | structured state fields, manifest or schema reference, completeness check, and known gaps |
+| `session_continuity_preserved` | capsule metadata, timeline, decisions, candidate ideas, evidence map, risks, next action, do-not-assume list, and exact resume prompt |
 
 ## Forbidden absolute claims
 
@@ -95,6 +114,19 @@ reason: local execution unavailable
 
 Do not convert a planned command into an executed result.
 
+## Handover verification rules
+
+For handover and continuity artifacts:
+
+1. A rendered Markdown view is not verification of structured state.
+2. A source archive is not verification of repository transfer.
+3. A repository transfer is not verification of project handover completeness.
+4. A candidate idea is not an accepted decision.
+5. A not-run check must remain `not_checked`.
+6. A prior model output is not evidence unless separately verified.
+
+Use `insufficient_evidence` when a required handover source, manifest, schema, live repository state, CI log, or validation output is unavailable.
+
 ## Escalation conditions
 
 Escalate or mark `insufficient_evidence` when:
@@ -105,7 +137,9 @@ Escalate or mark `insufficient_evidence` when:
 - CI status is unavailable for a CI claim;
 - security or correctness depends on a tool that was not run;
 - a prior model output is the only support;
-- model agreement is the only support.
+- model agreement is the only support;
+- a session continuity capsule lacks an exact resume prompt;
+- a confirmed decision contains an unverified execution, CI, or repository-state claim.
 
 ## Verification claim example
 
