@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/session-continuity.schema.json",
+  "title": "Session Continuity Capsule",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "capsule_id",
+    "capsule_version",
+    "why_this_capsule_exists",
+    "relevant_user_operating_context",
+    "conversation_timeline",
+    "current_mental_model",
+    "confirmed_decisions",
+    "candidate_ideas",
+    "evidence_source_map",
+    "open_questions",
+    "active_risks_warnings",
+    "current_work_state",
+    "next_best_action",
+    "do_not_repeat_or_assume",
+    "exact_resume_prompt",
+    "candidate_memory_captures",
+    "completeness_check"
+  ],
+  "properties": {
+    "capsule_id": {"type": "string", "minLength": 1},
+    "capsule_version": {"type": "string", "minLength": 1},
+    "created_at": {"type": "string"},
+    "project_id": {"type": "string"},
+    "status": {"type": "string", "enum": ["draft", "ready_for_intake", "superseded", "archived"]},
+    "why_this_capsule_exists": {"type": "string", "minLength": 1},
+    "relevant_user_operating_context": {"type": "array", "items": {"type": "string"}},
+    "conversation_timeline": {"type": "array", "items": {"type": "object"}},
+    "current_mental_model": {"type": "string", "minLength": 1},
+    "confirmed_decisions": {"type": "array", "items": {"$ref": "#/$defs/decision"}},
+    "candidate_ideas": {"type": "array", "items": {"type": "object"}},
+    "evidence_source_map": {"type": "array", "items": {"type": "object"}},
+    "open_questions": {"type": "array", "items": {"type": "string"}},
+    "active_risks_warnings": {"type": "array", "items": {"type": "string"}},
+    "current_work_state": {"type": "object"},
+    "next_best_action": {"type": "string", "minLength": 1},
+    "do_not_repeat_or_assume": {"type": "array", "items": {"type": "string"}},
+    "exact_resume_prompt": {"type": "string", "minLength": 1},
+    "candidate_memory_captures": {"type": "array", "items": {"type": "object"}},
+    "completeness_check": {"type": "object"}
+  },
+  "$defs": {
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "statement", "decision_status", "truth_status", "verification_status", "evidence_refs", "limits"],
+      "properties": {
+        "id": {"type": "string"},
+        "statement": {"type": "string"},
+        "decision_status": {"type": "string", "enum": ["accepted", "candidate", "rejected", "blocked", "superseded"]},
+        "truth_status": {"type": "string", "enum": ["evidence-backed", "derived_with_lineage", "explicitly_proposed", "connected_to_structured_gap", "not_applicable"]},
+        "verification_status": {"type": "string", "enum": ["not_checked", "statically_inspected", "source_supported", "tool_observed", "reproduced", "test_verified", "fixture_verified", "externally_reviewed", "not_verifiable", "insufficient_evidence"]},
+        "evidence_refs": {"type": "array", "items": {"type": "string"}},
+        "provenance_refs": {"type": "array", "items": {"type": "string"}},
+        "limits": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}
