@@ -1,0 +1,25 @@
+{
+  "version": "0.1.0",
+  "status": "candidate_first_map",
+  "principle": "The repository is the starting context, not the prison.",
+  "entries": [
+    {
+      "domain": "personal_llm_os",
+      "description": "Personal LLM operating layer.",
+      "primary_repo": "rezahh107/Personal-LLM-Operating-System",
+      "related_repos": [
+        {
+          "repo": "rezahh107/Prompt-Pipeline",
+          "relationship": "prompt engineering support",
+          "verification": "connector_verified",
+          "notes": "Fixture value only."
+        }
+      ],
+      "load_rule": "Load for boot and routing work.",
+      "when_to_use": "Use for personal LLM operating behavior.",
+      "when_not_to_use": "Do not use as a replacement for live repository inspection.",
+      "status": "active",
+      "notes": "Minimal valid registry fixture."
+    }
+  ]
+}
