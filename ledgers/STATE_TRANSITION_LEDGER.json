@@ -1,0 +1,5 @@
+{
+  "version": "0.1.0",
+  "purpose": "Append-only record of state transitions for claims, memory entries, protocols, and handoffs.",
+  "entries": []
+}

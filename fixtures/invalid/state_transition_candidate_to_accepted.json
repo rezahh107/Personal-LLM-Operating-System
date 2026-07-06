@@ -1,0 +1,11 @@
+{
+  "id": "TRN-2026-BAD-001",
+  "entity_type": "claim",
+  "entity_id": "CLM-2026-BAD-001",
+  "from": "candidate",
+  "to": "accepted",
+  "by": "llm",
+  "reason": "Model promoted its own candidate claim.",
+  "evidence_refs": [],
+  "timestamp": "2026-07-06T00:00:00Z"
+}

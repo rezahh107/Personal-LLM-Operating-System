@@ -1,0 +1,9 @@
+{
+  "id": "CLM-2026-001",
+  "text": "The repository should treat model-generated outputs as candidate memory by default.",
+  "state": "candidate",
+  "source": "llm",
+  "scope": "personal-llm-os",
+  "evidence_refs": [],
+  "created_at": "2026-07-06T00:00:00Z"
+}

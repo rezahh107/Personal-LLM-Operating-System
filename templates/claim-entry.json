@@ -1,0 +1,9 @@
+{
+  "id": "CLM-YYYY-NNN",
+  "text": "Write the claim as one clear sentence.",
+  "state": "candidate",
+  "source": "llm",
+  "scope": "domain-or-project-scope",
+  "evidence_refs": [],
+  "created_at": "YYYY-MM-DDTHH:MM:SSZ"
+}

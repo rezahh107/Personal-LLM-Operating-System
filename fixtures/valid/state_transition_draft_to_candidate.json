@@ -1,0 +1,13 @@
+{
+  "id": "TRN-2026-001",
+  "entity_type": "claim",
+  "entity_id": "CLM-2026-001",
+  "from": "draft",
+  "to": "candidate",
+  "by": "llm",
+  "reason": "Initial model output was structured as a candidate claim.",
+  "source": "llm",
+  "scope": "personal-llm-os",
+  "evidence_refs": [],
+  "timestamp": "2026-07-06T00:00:00Z"
+}

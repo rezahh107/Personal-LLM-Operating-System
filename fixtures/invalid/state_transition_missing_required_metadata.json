@@ -1,0 +1,11 @@
+{
+  "id": "TRN-2026-BAD-002",
+  "entity_type": "claim",
+  "entity_id": "CLM-2026-BAD-002",
+  "from": "draft",
+  "to": "candidate",
+  "by": "llm",
+  "reason": "Missing required source and scope metadata.",
+  "evidence_refs": [],
+  "timestamp": "2026-07-06T00:00:00Z"
+}

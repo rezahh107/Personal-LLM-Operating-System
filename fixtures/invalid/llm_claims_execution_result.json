@@ -1,0 +1,9 @@
+{
+  "id": "CLM-2026-BAD-002",
+  "text": "The model ran the tests and all tests passed.",
+  "state": "validated",
+  "source": "llm",
+  "scope": "personal-llm-os",
+  "evidence_refs": [],
+  "created_at": "2026-07-06T00:00:00Z"
+}

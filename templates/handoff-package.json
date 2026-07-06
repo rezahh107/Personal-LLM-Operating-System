@@ -1,0 +1,13 @@
+{
+  "task_goal": "State the exact downstream task.",
+  "source_context": [],
+  "accepted_facts": [],
+  "candidate_claims": [],
+  "quarantined_claims": [],
+  "evidence_refs": [],
+  "known_limits": [],
+  "allowed_next_actions": [],
+  "forbidden_next_actions": [],
+  "required_output_schema": "schema name or none",
+  "stop_conditions": []
+}
