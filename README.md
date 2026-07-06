@@ -24,10 +24,11 @@ The user is the coordinator and goal owner, not the technical verifier for most 
 6. **Governed Memory Runtime** — model-facing scripts, fixtures, ledgers, and CI checks prevent the repository from becoming a prose-only policy book.
 7. **Domain Adapters** — audit, GitHub repair, prompt engineering, image workflows, and other domains inherit the parent protocol.
 8. **Trust / Provenance / Verification Layer** — governance authority, epistemic support, verification status, and lifecycle status are separate.
+9. **Project / Session Continuity Layer** — structured continuity state preserves decisions, evidence boundaries, risks, open questions, and exact resume prompts across long chats and model handoffs.
 
-## Boot, routing, and governance layer
+## Boot, routing, governance, and continuity layer
 
-The repository defines the architecture layer for starting future model sessions, routing user requests, and preserving trust boundaries:
+The repository defines the architecture layer for starting future model sessions, routing user requests, preserving trust boundaries, and continuing long sessions safely:
 
 1. **Boot Protocol** — `protocols/BOOT_PROTOCOL.md`
 2. **User Operating Profile** — `docs/USER_OPERATING_PROFILE.md`
@@ -41,7 +42,10 @@ The repository defines the architecture layer for starting future model sessions
 10. **Provenance Policy** — `protocols/PROVENANCE_POLICY.md`
 11. **Context Loading Policy** — `protocols/CONTEXT_LOADING_POLICY.md`
 12. **Multi-Model Review Policy** — `protocols/MULTI_MODEL_REVIEW_POLICY.md`
-13. **Repository Registry / Tool Map** — `registries/REPOSITORY_REGISTRY.json`
+13. **Project Continuity Protocol** — `protocols/PROJECT_CONTINUITY_PROTOCOL.md`
+14. **Session Continuity Protocol** — `protocols/SESSION_CONTINUITY_PROTOCOL.md`
+15. **Handover Intake Protocol** — `protocols/HANDOVER_INTAKE_PROTOCOL.md`
+16. **Repository Registry / Tool Map** — `registries/REPOSITORY_REGISTRY.json`
 
 ## Start here
 
@@ -57,13 +61,15 @@ protocols/RESPONSE_DEPTH_POLICY.md
 protocols/INSTRUCTION_TRUST_POLICY.md when authority or external/target content matters
 protocols/VERIFICATION_PROTOCOL.md when technical claims matter
 protocols/CONTEXT_LOADING_POLICY.md when context selection matters
+protocols/SESSION_CONTINUITY_PROTOCOL.md when closing, compacting, or continuing a long session
+protocols/HANDOVER_INTAKE_PROTOCOL.md when resuming from a handover or continuity capsule
 protocols/IDEA_MATURATION_PIPELINE.md when the topic is new or strategic
 ```
 
 ## Current status
 
 ```yaml
-status: trust_provenance_verification_hardening
+status: project_session_continuity_contract
 scope: personal_llm_orchestration
 primary_user_role: coordinator_orchestrator
 technical_verifier_assumption: false

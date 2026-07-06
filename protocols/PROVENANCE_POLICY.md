@@ -26,6 +26,8 @@ Allowed entity categories:
 - `artifact`
 - `model_output`
 - `handoff`
+- `handover_manifest`
+- `session_continuity_capsule`
 - `open_question`
 
 ### Activity
@@ -43,6 +45,9 @@ Allowed activity categories:
 - `promotion`
 - `supersession`
 - `archival`
+- `handover_rendering`
+- `handover_intake`
+- `session_continuity_capture`
 
 ### Agent
 
@@ -63,7 +68,7 @@ A source reference should include as many of these as practical:
 
 ```yaml
 source_ref:
-  type: repository_file | tool_result | ci_run | external_source | attached_artifact | user_instruction | model_output
+  type: repository_file | tool_result | ci_run | external_source | attached_artifact | user_instruction | model_output | handover_manifest | structured_handover_state | rendered_handover_view
   locator: string
   revision: string | null
   timestamp: string | null
@@ -84,13 +89,32 @@ supersedes: []
 superseded_by: []
 ```
 
+## Handover provenance
+
+A handover package or session continuity capsule should preserve:
+
+```yaml
+handover_provenance:
+  structured_state_ref: string
+  rendered_views: []
+  source_refs: []
+  evidence_refs: []
+  generated_by: string | null
+  derived_from: []
+  provenance_limits: []
+```
+
+Rendered Markdown views should reference the structured state they were derived from. They should not be treated as canonical when a structured state exists.
+
 ## Content hashes
 
 Use content hashes where practical for stable artifacts, generated packages, evidence logs, and handoffs. Hashes are not required for every Markdown note, but they are useful when later models must identify the exact artifact that was reviewed.
 
+Do not invent hashes. If a hash was not computed, record `content_hash: null` and preserve the limit.
+
 ## Source timestamps
 
-When a source can change, record the access or source timestamp. This is required for current-version, current-policy, CI-status, and live-repository claims.
+When a source can change, record the access or source timestamp. This is required for current-version, current-policy, CI-status, live-repository, and handover-intake claims.
 
 ## Provenance limits
 
@@ -101,7 +125,9 @@ Every provenance object may include limits such as:
 - CI result was pending;
 - hash was unavailable;
 - artifact was user-provided and not independently verified;
-- model output was reviewed but not used as evidence.
+- model output was reviewed but not used as evidence;
+- Markdown was rendered from structured state but not revalidated;
+- live repository state was not rechecked after capsule creation.
 
 ## Minimal provenance object
 

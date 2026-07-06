@@ -1,0 +1,32 @@
+{
+  "capsule_id": "SCAP-0003",
+  "capsule_version": "0.1.0",
+  "why_this_capsule_exists": "Invalid fixture: an unverified execution claim is placed in confirmed decisions.",
+  "relevant_user_operating_context": [],
+  "conversation_timeline": [],
+  "current_mental_model": "Unverified execution claims must not be accepted decisions.",
+  "confirmed_decisions": [
+    {
+      "id": "DEC-BAD-001",
+      "statement": "The repository validation commands passed.",
+      "decision_status": "accepted",
+      "truth_status": "explicitly_proposed",
+      "verification_status": "not_checked",
+      "evidence_refs": [],
+      "provenance_refs": [],
+      "limits": ["Invalid fixture: no command output or CI evidence exists."]
+    }
+  ],
+  "candidate_ideas": [],
+  "evidence_source_map": [],
+  "open_questions": [],
+  "active_risks_warnings": [],
+  "current_work_state": {},
+  "next_best_action": "Reject this capsule.",
+  "do_not_repeat_or_assume": ["Do not convert documented commands into executed commands."],
+  "exact_resume_prompt": "This invalid fixture should not be used as a resume prompt.",
+  "candidate_memory_captures": [],
+  "completeness_check": {
+    "has_exact_resume_prompt": true
+  }
+}

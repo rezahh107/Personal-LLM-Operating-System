@@ -1,0 +1,83 @@
+{
+  "capsule_id": "SCAP-0001",
+  "capsule_version": "0.1.0",
+  "created_at": "2026-07-06T00:00:00Z",
+  "project_id": "personal-llm-operating-system",
+  "status": "ready_for_intake",
+  "why_this_capsule_exists": "The session is ready to continue in another chat without losing active decisions and evidence limits.",
+  "relevant_user_operating_context": [
+    "User prefers Persian-facing reports while technical identifiers remain English and copyable."
+  ],
+  "conversation_timeline": [
+    {
+      "step": 1,
+      "event": "User requested a session continuity architecture contract.",
+      "status": "source_supported",
+      "evidence_refs": ["SRC-USER-001"]
+    }
+  ],
+  "current_mental_model": "Continuity is a structured state contract. Markdown is a rendered view, not the canonical source.",
+  "confirmed_decisions": [
+    {
+      "id": "DEC-001",
+      "statement": "The canonical source for continuity handover is structured state, not free-form Markdown.",
+      "decision_status": "accepted",
+      "truth_status": "evidence-backed",
+      "verification_status": "source_supported",
+      "evidence_refs": ["SRC-USER-001"],
+      "provenance_refs": [],
+      "limits": ["Fixture evidence is synthetic and does not prove runtime behavior."]
+    }
+  ],
+  "candidate_ideas": [
+    {
+      "id": "CAND-001",
+      "statement": "A future renderer could generate Markdown from structured capsule state.",
+      "promotion_gate": "Separate PR with renderer contract and tests.",
+      "evidence_refs": []
+    }
+  ],
+  "evidence_source_map": [
+    {
+      "id": "SRC-USER-001",
+      "type": "user_instruction",
+      "locator": "active_chat_request",
+      "revision": null,
+      "timestamp": "2026-07-06T00:00:00Z",
+      "trust_class": "active_user_instruction",
+      "verification_status": "source_supported",
+      "limits": ["Fixture timestamp is illustrative."]
+    }
+  ],
+  "open_questions": [],
+  "active_risks_warnings": ["Do not treat this fixture as evidence that a full renderer exists."],
+  "current_work_state": {
+    "repository": "rezahh107/Personal-LLM-Operating-System",
+    "branch": "architecture/project-session-continuity-contract",
+    "tests_run": [],
+    "tests_not_run": ["GitHub Actions not represented by fixture."]
+  },
+  "next_best_action": "Use the resume prompt to continue from the structured capsule state.",
+  "do_not_repeat_or_assume": [
+    "Do not assume CI passed unless a current CI run is inspected.",
+    "Do not promote candidate ideas into accepted decisions."
+  ],
+  "exact_resume_prompt": "Continue from this Session Continuity Capsule. Load the structured state first, preserve evidence limits, and begin with the next_best_action.",
+  "candidate_memory_captures": [],
+  "completeness_check": {
+    "has_metadata": true,
+    "has_timeline": true,
+    "has_current_mental_model": true,
+    "has_confirmed_decisions": true,
+    "has_candidate_ideas": true,
+    "has_evidence_map": true,
+    "has_open_questions": true,
+    "has_risks": true,
+    "has_current_work_state": true,
+    "has_next_best_action": true,
+    "has_do_not_assume_list": true,
+    "has_exact_resume_prompt": true,
+    "preserves_uncertainty": true,
+    "preserves_not_run_checks": true
+  }
+}

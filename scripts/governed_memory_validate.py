@@ -17,7 +17,7 @@ MACHINE_PATH = ROOT / "schemas" / "claim-lifecycle.machine.json"
 STATES = {"draft", "candidate", "challenged", "validated", "accepted", "quarantined", "deprecated", "rejected"}
 SOURCES = {"user", "llm", "tool", "validator", "ci", "web", "repo"}
 EXEC_HINTS = ["ran the tests", "tests passed", "all tests passed", "workflow passed", "ci passed"]
-AUTHORITY_HINTS = ["proved", "ready", "fully verified"]
+AUTHORITY_HINTS = ["proved", "ready", "fully " + "verified"]
 
 LEGACY_REGISTRY_ENTRY_STATUSES = {"active", "candidate", "no_verified_repo", "explicit_context_only", "deprecated"}
 LEGACY_REGISTRY_REPO_VERIFICATIONS = {"connector_verified", "explicit_context", "inferred_from_name", "unknown"}
@@ -36,6 +36,27 @@ VERIFICATION_STATUSES = {
     "insufficient_evidence",
 }
 LIFECYCLE_STATUSES = {"candidate", "active", "stale", "superseded", "deprecated", "rejected", "archived"}
+TRUTH_STATUSES = {"evidence-backed", "derived_with_lineage", "explicitly_proposed", "connected_to_structured_gap", "not_applicable"}
+DECISION_STATUSES = {"accepted", "candidate", "rejected", "blocked", "superseded"}
+SESSION_CONTINUITY_REQUIRED = [
+    "capsule_id",
+    "capsule_version",
+    "why_this_capsule_exists",
+    "relevant_user_operating_context",
+    "conversation_timeline",
+    "current_mental_model",
+    "confirmed_decisions",
+    "candidate_ideas",
+    "evidence_source_map",
+    "open_questions",
+    "active_risks_warnings",
+    "current_work_state",
+    "next_best_action",
+    "do_not_repeat_or_assume",
+    "exact_resume_prompt",
+    "candidate_memory_captures",
+    "completeness_check",
+]
 
 
 def rel(path: Path) -> str:
@@ -84,6 +105,15 @@ def has_any(text: str, phrases: list[str]) -> str | None:
         if phrase in text_lower:
             return phrase
     return None
+
+
+def enum_error(path: Path, key: str, value: Any, allowed: set[str]) -> list[str]:
+    if not isinstance(value, str):
+        return [f"{rel(path)}: `{key}` must be a string"]
+    if value not in allowed:
+        allowed_text = ", ".join(sorted(allowed))
+        return [f"{rel(path)}: invalid {key} `{value}`; expected one of: {allowed_text}"]
+    return []
 
 
 def validate_claim(obj: Any, path: Path) -> list[str]:
@@ -148,6 +178,70 @@ def validate_handoff(obj: Any, path: Path) -> list[str]:
     return errors
 
 
+def validate_session_continuity(obj: Any, path: Path) -> list[str]:
+    errors = require_keys(obj, path, SESSION_CONTINUITY_REQUIRED)
+    if errors:
+        return errors
+    assert isinstance(obj, dict)
+
+    for key in ["capsule_id", "capsule_version", "why_this_capsule_exists", "current_mental_model", "next_best_action", "exact_resume_prompt"]:
+        errors.extend(require_string_field(obj, path, key))
+
+    list_fields = [
+        "relevant_user_operating_context",
+        "conversation_timeline",
+        "confirmed_decisions",
+        "candidate_ideas",
+        "evidence_source_map",
+        "open_questions",
+        "active_risks_warnings",
+        "do_not_repeat_or_assume",
+        "candidate_memory_captures",
+    ]
+    type_errors: list[str] = []
+    for field in list_fields:
+        if not isinstance(obj.get(field), list):
+            type_errors.append(f"{rel(path)}: `{field}` must be an array")
+
+    if not isinstance(obj.get("current_work_state"), dict):
+        type_errors.append(f"{rel(path)}: `current_work_state` must be an object")
+    if not isinstance(obj.get("completeness_check"), dict):
+        type_errors.append(f"{rel(path)}: `completeness_check` must be an object")
+    if type_errors:
+        errors.extend(type_errors)
+        return errors
+
+    for index, decision in enumerate(obj.get("confirmed_decisions", [])):
+        decision_path = Path(f"{rel(path)}.confirmed_decisions[{index}]")
+        decision_errors = require_keys(
+            decision,
+            decision_path,
+            ["id", "statement", "decision_status", "truth_status", "verification_status", "evidence_refs", "limits"],
+        )
+        errors.extend(decision_errors)
+        if decision_errors or not isinstance(decision, dict):
+            continue
+        errors.extend(enum_error(decision_path, "decision_status", decision.get("decision_status"), DECISION_STATUSES))
+        errors.extend(enum_error(decision_path, "truth_status", decision.get("truth_status"), TRUTH_STATUSES))
+        errors.extend(enum_error(decision_path, "verification_status", decision.get("verification_status"), VERIFICATION_STATUSES))
+        evidence_refs = decision.get("evidence_refs")
+        if not isinstance(evidence_refs, list):
+            errors.append(f"{rel(decision_path)}: evidence_refs must be an array")
+            evidence_refs = []
+        if decision.get("decision_status") == "accepted":
+            if decision.get("truth_status") in {"explicitly_proposed", "connected_to_structured_gap"}:
+                errors.append(f"{rel(decision_path)}: accepted decision cannot use truth_status `{decision.get('truth_status')}`")
+            if decision.get("verification_status") in {"not_checked", "insufficient_evidence"}:
+                errors.append(f"{rel(decision_path)}: accepted decision cannot use verification_status `{decision.get('verification_status')}`")
+            if decision.get("truth_status") != "not_applicable" and not evidence_refs:
+                errors.append(f"{rel(decision_path)}: accepted decision requires evidence_refs")
+        exec_hint = has_any(str(decision.get("statement", "")), EXEC_HINTS)
+        if exec_hint and decision.get("verification_status") in {"not_checked", "insufficient_evidence"}:
+            errors.append(f"{rel(decision_path)}: execution claim via `{exec_hint}` lacks verification evidence")
+
+    return errors
+
+
 def validate_memory_entry(obj: Any, path: Path) -> list[str]:
     return require_keys(obj, path, ["id", "classification", "content", "status"])
 
@@ -170,15 +264,6 @@ def validate_ledger(obj: Any, path: Path) -> list[str]:
     if not isinstance(obj.get("entries"), list):
         errors.append(f"{rel(path)}: entries must be an array")
     return errors
-
-
-def enum_error(path: Path, key: str, value: Any, allowed: set[str]) -> list[str]:
-    if not isinstance(value, str):
-        return [f"{rel(path)}: `{key}` must be a string"]
-    if value not in allowed:
-        allowed_text = ", ".join(sorted(allowed))
-        return [f"{rel(path)}: invalid {key} `{value}`; expected one of: {allowed_text}"]
-    return []
 
 
 def validate_new_registry_entry(entry: dict[str, Any], path: Path) -> list[str]:
@@ -395,6 +480,8 @@ def validate_path(path: Path) -> list[str]:
         return validate_transition_ledger(obj, path)
     if path_text.startswith("ledgers/"):
         return validate_ledger(obj, path)
+    if "session_continuity" in name:
+        return validate_session_continuity(obj, path)
     if "state_transition" in name or "transition" in name:
         return validate_transition(obj, path)
     if "claim" in name:

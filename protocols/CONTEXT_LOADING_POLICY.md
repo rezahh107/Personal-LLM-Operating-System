@@ -35,7 +35,7 @@ A file should not be loaded merely because it exists.
 
 ## Context budget
 
-Use the smallest context that protects correctness. Prefer metadata and targeted sections first. Load full files when the task depends on exact wording, schema shape, validation behavior, authority, or unresolved conflict.
+Use the smallest context that protects correctness. Prefer metadata and targeted sections first. Load full files when the task depends on exact wording, schema shape, validation behavior, authority, unresolved conflict, or structured handover state.
 
 ## Freshness checks
 
@@ -48,11 +48,12 @@ Check freshness when the claim depends on:
 - security or dependency status;
 - legal/compliance facts;
 - external API behavior;
-- active project status.
+- active project status;
+- handover state that may have been superseded by live repository changes.
 
 ## Conflict detection
 
-A conflict exists when two loaded sources disagree about authority, status, version, scope, validation, or allowed next action. High-authority conflicts must be preserved and resolved before using the affected claim as active guidance.
+A conflict exists when two loaded sources disagree about authority, status, version, scope, validation, allowed next action, or canonical handover state. High-authority conflicts must be preserved and resolved before using the affected claim as active guidance.
 
 ## Full-file loading triggers
 
@@ -63,7 +64,19 @@ Load a full file when:
 - schema or validator behavior depends on complete structure;
 - a lifecycle or supersession decision depends on exact wording;
 - a patch will modify that file;
-- a quoted section is insufficient to evaluate the claim.
+- a quoted section is insufficient to evaluate the claim;
+- a structured handover state, handover manifest, or session continuity capsule is the input to the task.
+
+## Continuity loading triggers
+
+Load continuity protocols when:
+
+- the user asks to close, compact, transfer, or resume a session;
+- the user provides a resume prompt, capsule, manifest, or handover package;
+- the conversation includes multiple PRs, branches, architecture decisions, external sources, or model outputs;
+- context loss would materially harm continuation.
+
+For continuity tasks, load structured state before rendered Markdown views.
 
 ## External-search triggers
 
@@ -82,6 +95,7 @@ retrieval_stop_when:
   - applicable_authoritative_contract_loaded
   - required_claims_have_evidence
   - no_unresolved_high_authority_conflict
+  - canonical_structured_handover_state_loaded_when_needed
   - additional_sources_are_redundant
   - context_budget_threshold_reached
 ```
@@ -94,8 +108,8 @@ If evidence threshold is not met:
 2. State what is missing.
 3. Do not convert uncertainty into a pass/fail result.
 4. Continue only when the remaining action is safe and scoped.
-5. Escalate when the missing evidence affects safety, correctness, permissions, publishing, or destructive operations.
+5. Escalate when the missing evidence affects safety, correctness, permissions, publishing, destructive operations, or accepted handover state.
 
 ## Determinism rule
 
-For the same task, same active project, same repository state, and same available context budget, the selection process should choose the same first-read files and the same evidence threshold.
+For the same task, same active project, same repository state, same structured handover state, and same available context budget, the selection process should choose the same first-read files and the same evidence threshold.
