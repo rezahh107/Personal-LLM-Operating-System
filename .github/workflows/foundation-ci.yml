@@ -18,4 +18,4 @@ jobs:
       - name: Validate foundation files
         run: python3 scripts/validate_foundation.py
       - name: Validate governed memory runtime
-        run: python3 scripts/repo_memory.py validate
+        run: python3 scripts/governed_memory_validate.py validate
