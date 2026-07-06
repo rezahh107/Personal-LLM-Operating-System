@@ -12,7 +12,7 @@ Memory must be governed.
 LLMs may generate work, but no single model silently becomes the source of truth.
 ```
 
-The user is the coordinator and goal owner, not the technical verifier for most specialist claims. Technical certainty must come from tools, validators, evidence, second-model critique, stronger-model review, or explicit uncertainty handling.
+The user is the coordinator and goal owner, not the technical verifier for most specialist claims. Technical certainty must come from tools, validators, evidence, source review, fixtures, CI checks, or explicit uncertainty handling.
 
 ## Repository pillars
 
@@ -23,10 +23,11 @@ The user is the coordinator and goal owner, not the technical verifier for most 
 5. **Handoff Contracts** — model outputs must preserve evidence, uncertainty, limits, and allowed next actions for downstream models.
 6. **Governed Memory Runtime** — model-facing scripts, fixtures, ledgers, and CI checks prevent the repository from becoming a prose-only policy book.
 7. **Domain Adapters** — audit, GitHub repair, prompt engineering, image workflows, and other domains inherit the parent protocol.
+8. **Trust / Provenance / Verification Layer** — governance authority, epistemic support, verification status, and lifecycle status are separate.
 
-## Boot and routing layer
+## Boot, routing, and governance layer
 
-The repository now also defines the first architecture layer for starting future model sessions and routing user requests:
+The repository defines the architecture layer for starting future model sessions, routing user requests, and preserving trust boundaries:
 
 1. **Boot Protocol** — `protocols/BOOT_PROTOCOL.md`
 2. **User Operating Profile** — `docs/USER_OPERATING_PROFILE.md`
@@ -34,8 +35,13 @@ The repository now also defines the first architecture layer for starting future
 4. **Response Depth Policy** — `protocols/RESPONSE_DEPTH_POLICY.md`
 5. **External Knowledge Policy** — `protocols/EXTERNAL_KNOWLEDGE_POLICY.md`
 6. **Knowledge Capture Protocol** — `protocols/KNOWLEDGE_CAPTURE_PROTOCOL.md`
-7. **Memory Review and Decay** — `protocols/MEMORY_REVIEW_AND_DECAY.md`
-8. **Repository Registry / Tool Map** — `registries/REPOSITORY_REGISTRY.json`
+7. **Memory Lifecycle / Review / Decay** — `protocols/MEMORY_REVIEW_AND_DECAY.md`
+8. **Instruction Trust Policy** — `protocols/INSTRUCTION_TRUST_POLICY.md`
+9. **Verification Protocol** — `protocols/VERIFICATION_PROTOCOL.md`
+10. **Provenance Policy** — `protocols/PROVENANCE_POLICY.md`
+11. **Context Loading Policy** — `protocols/CONTEXT_LOADING_POLICY.md`
+12. **Multi-Model Review Policy** — `protocols/MULTI_MODEL_REVIEW_POLICY.md`
+13. **Repository Registry / Tool Map** — `registries/REPOSITORY_REGISTRY.json`
 
 ## Start here
 
@@ -48,13 +54,16 @@ docs/USER_OPERATING_PROFILE.md
 protocols/START_HERE_FOR_MODELS.md
 protocols/SESSION_ROUTING_PIPELINE.md
 protocols/RESPONSE_DEPTH_POLICY.md
+protocols/INSTRUCTION_TRUST_POLICY.md when authority or external/target content matters
+protocols/VERIFICATION_PROTOCOL.md when technical claims matter
+protocols/CONTEXT_LOADING_POLICY.md when context selection matters
 protocols/IDEA_MATURATION_PIPELINE.md when the topic is new or strategic
 ```
 
 ## Current status
 
 ```yaml
-status: boot_routing_registry_foundation
+status: trust_provenance_verification_hardening
 scope: personal_llm_orchestration
 primary_user_role: coordinator_orchestrator
 technical_verifier_assumption: false

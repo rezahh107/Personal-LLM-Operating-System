@@ -26,6 +26,11 @@ REQUIRED_FILES = [
     "protocols/EXTERNAL_KNOWLEDGE_POLICY.md",
     "protocols/KNOWLEDGE_CAPTURE_PROTOCOL.md",
     "protocols/MEMORY_REVIEW_AND_DECAY.md",
+    "protocols/INSTRUCTION_TRUST_POLICY.md",
+    "protocols/VERIFICATION_PROTOCOL.md",
+    "protocols/PROVENANCE_POLICY.md",
+    "protocols/CONTEXT_LOADING_POLICY.md",
+    "protocols/MULTI_MODEL_REVIEW_POLICY.md",
     "protocols/IDEA_MATURATION_PIPELINE.md",
     "protocols/CLAIM_LIFECYCLE.md",
     "protocols/HANDOFF_CONTRACT.md",
@@ -59,6 +64,11 @@ BANNED_ASSURANCE_PHRASES = [
     "certified",
 ]
 
+BANNED_PHRASE_EXEMPT_FILES = {
+    "REPORT_TRUST_CALIBRATION.md",
+    "VERIFICATION_PROTOCOL.md",
+}
+
 
 def require_files() -> list[str]:
     errors: list[str] = []
@@ -82,11 +92,11 @@ def parse_json_files() -> list[str]:
 def check_banned_phrases() -> list[str]:
     errors: list[str] = []
     for path in ROOT.rglob("*.md"):
-        if ".git" in path.parts:
+        if ".git" in path.parts or path.name in BANNED_PHRASE_EXEMPT_FILES:
             continue
         text = path.read_text(encoding="utf-8").lower()
         for phrase in BANNED_ASSURANCE_PHRASES:
-            if phrase in text and path.name != "REPORT_TRUST_CALIBRATION.md":
+            if phrase in text:
                 errors.append(f"restricted phrase '{phrase}' appears in {path.relative_to(ROOT)}")
     return errors
 

@@ -18,8 +18,24 @@ STATES = {"draft", "candidate", "challenged", "validated", "accepted", "quaranti
 SOURCES = {"user", "llm", "tool", "validator", "ci", "web", "repo"}
 EXEC_HINTS = ["ran the tests", "tests passed", "all tests passed", "workflow passed", "ci passed"]
 AUTHORITY_HINTS = ["proved", "ready", "fully verified"]
-REGISTRY_ENTRY_STATUSES = {"active", "candidate", "no_verified_repo", "explicit_context_only", "deprecated"}
-REGISTRY_REPO_VERIFICATIONS = {"connector_verified", "explicit_context", "inferred_from_name", "unknown"}
+
+LEGACY_REGISTRY_ENTRY_STATUSES = {"active", "candidate", "no_verified_repo", "explicit_context_only", "deprecated"}
+LEGACY_REGISTRY_REPO_VERIFICATIONS = {"connector_verified", "explicit_context", "inferred_from_name", "unknown"}
+GOVERNANCE_AUTHORITIES = {"advisory", "accepted_decision", "project_contract", "frozen_contract"}
+EPISTEMIC_SUPPORT = {"unsupported", "source_supported", "observed", "reproduced", "test_verified", "expert_verified"}
+VERIFICATION_STATUSES = {
+    "not_checked",
+    "statically_inspected",
+    "source_supported",
+    "tool_observed",
+    "reproduced",
+    "test_verified",
+    "fixture_verified",
+    "externally_reviewed",
+    "not_verifiable",
+    "insufficient_evidence",
+}
+LIFECYCLE_STATUSES = {"candidate", "active", "stale", "superseded", "deprecated", "rejected", "archived"}
 
 
 def rel(path: Path) -> str:
@@ -75,12 +91,10 @@ def validate_claim(obj: Any, path: Path) -> list[str]:
     if errors:
         return errors
     assert isinstance(obj, dict)
-
     state = obj.get("state")
     source = obj.get("source")
     evidence_refs = obj.get("evidence_refs", [])
     text = str(obj.get("text", ""))
-
     if state not in STATES:
         errors.append(f"{rel(path)}: invalid claim state `{state}`")
     if source not in SOURCES:
@@ -98,17 +112,30 @@ def validate_claim(obj: Any, path: Path) -> list[str]:
 
 
 def validate_handoff(obj: Any, path: Path) -> list[str]:
-    required = ["task_goal", "accepted_facts", "candidate_claims", "known_limits", "allowed_next_actions", "forbidden_next_actions", "stop_conditions"]
+    required = [
+        "task_goal",
+        "accepted_facts",
+        "candidate_claims",
+        "known_limits",
+        "allowed_next_actions",
+        "forbidden_next_actions",
+        "stop_conditions",
+    ]
     errors = require_keys(obj, path, required)
     if errors:
         return errors
     assert isinstance(obj, dict)
-
-    list_fields = ["accepted_facts", "candidate_claims", "known_limits", "allowed_next_actions", "forbidden_next_actions", "stop_conditions"]
+    list_fields = [
+        "accepted_facts",
+        "candidate_claims",
+        "known_limits",
+        "allowed_next_actions",
+        "forbidden_next_actions",
+        "stop_conditions",
+    ]
     type_errors = [f"{rel(path)}: `{field}` must be an array" for field in list_fields if not isinstance(obj.get(field), list)]
     if type_errors:
         return type_errors
-
     accepted_text = " ".join(str(item) for item in obj.get("accepted_facts", []))
     if has_any(accepted_text, AUTHORITY_HINTS) and not obj.get("evidence_refs"):
         errors.append(f"{rel(path)}: accepted facts contain authority language without evidence_refs")
@@ -145,8 +172,62 @@ def validate_ledger(obj: Any, path: Path) -> list[str]:
     return errors
 
 
-def validate_repository_registry(obj: Any, path: Path) -> list[str]:
-    root_allowed = {"version", "status", "last_reviewed", "principle", "entries"}
+def enum_error(path: Path, key: str, value: Any, allowed: set[str]) -> list[str]:
+    if not isinstance(value, str):
+        return [f"{rel(path)}: `{key}` must be a string"]
+    if value not in allowed:
+        allowed_text = ", ".join(sorted(allowed))
+        return [f"{rel(path)}: invalid {key} `{value}`; expected one of: {allowed_text}"]
+    return []
+
+
+def validate_new_registry_entry(entry: dict[str, Any], path: Path) -> list[str]:
+    entry_allowed = {
+        "domain",
+        "description",
+        "primary_repo",
+        "related_repos",
+        "load_rule",
+        "when_to_use",
+        "when_not_to_use",
+        "governance_authority",
+        "epistemic_support",
+        "verification_status",
+        "lifecycle_status",
+        "notes",
+    }
+    related_allowed = {"repo", "relationship", "verification_status", "epistemic_support", "lifecycle_status", "notes"}
+    errors = require_keys(entry, path, sorted(entry_allowed))
+    errors.extend(reject_unknown_keys(entry, path, entry_allowed))
+    for key in ["domain", "description", "load_rule", "when_to_use", "when_not_to_use", "notes"]:
+        errors.extend(require_string_field(entry, path, key))
+    if entry.get("primary_repo") is not None and not isinstance(entry.get("primary_repo"), str):
+        errors.append(f"{rel(path)}: primary_repo must be a string or null")
+    errors.extend(enum_error(path, "governance_authority", entry.get("governance_authority"), GOVERNANCE_AUTHORITIES))
+    errors.extend(enum_error(path, "epistemic_support", entry.get("epistemic_support"), EPISTEMIC_SUPPORT))
+    errors.extend(enum_error(path, "verification_status", entry.get("verification_status"), VERIFICATION_STATUSES))
+    errors.extend(enum_error(path, "lifecycle_status", entry.get("lifecycle_status"), LIFECYCLE_STATUSES))
+    related_repos = entry.get("related_repos")
+    if not isinstance(related_repos, list):
+        errors.append(f"{rel(path)}: related_repos must be an array")
+        return errors
+    for repo_index, repo_entry in enumerate(related_repos):
+        repo_path = Path(f"{rel(path)}.related_repos[{repo_index}]")
+        errors.extend(require_keys(repo_entry, repo_path, ["repo", "relationship", "verification_status", "epistemic_support", "lifecycle_status"]))
+        if not isinstance(repo_entry, dict):
+            continue
+        errors.extend(reject_unknown_keys(repo_entry, repo_path, related_allowed))
+        for key in ["repo", "relationship"]:
+            errors.extend(require_string_field(repo_entry, repo_path, key))
+        if "notes" in repo_entry:
+            errors.extend(require_string_field(repo_entry, repo_path, "notes", non_empty=False))
+        errors.extend(enum_error(repo_path, "verification_status", repo_entry.get("verification_status"), VERIFICATION_STATUSES))
+        errors.extend(enum_error(repo_path, "epistemic_support", repo_entry.get("epistemic_support"), EPISTEMIC_SUPPORT))
+        errors.extend(enum_error(repo_path, "lifecycle_status", repo_entry.get("lifecycle_status"), LIFECYCLE_STATUSES))
+    return errors
+
+
+def validate_legacy_registry_entry(entry: dict[str, Any], path: Path) -> list[str]:
     entry_allowed = {
         "domain",
         "description",
@@ -158,75 +239,68 @@ def validate_repository_registry(obj: Any, path: Path) -> list[str]:
         "status",
         "notes",
     }
-    related_repo_allowed = {"repo", "relationship", "verification", "notes"}
+    related_allowed = {"repo", "relationship", "verification", "notes"}
+    errors = require_keys(entry, path, sorted(entry_allowed))
+    errors.extend(reject_unknown_keys(entry, path, entry_allowed))
+    for key in ["domain", "description", "load_rule", "when_to_use", "when_not_to_use", "status", "notes"]:
+        errors.extend(require_string_field(entry, path, key))
+    if entry.get("primary_repo") is not None and not isinstance(entry.get("primary_repo"), str):
+        errors.append(f"{rel(path)}: primary_repo must be a string or null")
+    status = entry.get("status")
+    if isinstance(status, str) and status not in LEGACY_REGISTRY_ENTRY_STATUSES:
+        allowed = ", ".join(sorted(LEGACY_REGISTRY_ENTRY_STATUSES))
+        errors.append(f"{rel(path)}: invalid status `{status}`; expected one of: {allowed}")
+    related_repos = entry.get("related_repos")
+    if not isinstance(related_repos, list):
+        errors.append(f"{rel(path)}: related_repos must be an array")
+        return errors
+    for repo_index, repo_entry in enumerate(related_repos):
+        repo_path = Path(f"{rel(path)}.related_repos[{repo_index}]")
+        errors.extend(require_keys(repo_entry, repo_path, ["repo", "relationship", "verification"]))
+        if not isinstance(repo_entry, dict):
+            continue
+        errors.extend(reject_unknown_keys(repo_entry, repo_path, related_allowed))
+        for key in ["repo", "relationship", "verification"]:
+            errors.extend(require_string_field(repo_entry, repo_path, key))
+        if "notes" in repo_entry:
+            errors.extend(require_string_field(repo_entry, repo_path, "notes", non_empty=False))
+        verification = repo_entry.get("verification")
+        if isinstance(verification, str) and verification not in LEGACY_REGISTRY_REPO_VERIFICATIONS:
+            allowed = ", ".join(sorted(LEGACY_REGISTRY_REPO_VERIFICATIONS))
+            errors.append(f"{rel(repo_path)}: invalid verification `{verification}`; expected one of: {allowed}")
+    return errors
 
+
+def validate_repository_registry(obj: Any, path: Path) -> list[str]:
+    root_allowed = {"version", "status", "last_reviewed", "principle", "entries"}
     errors = require_keys(obj, path, ["version", "status", "principle", "entries"])
     if errors:
         return errors
     assert isinstance(obj, dict)
-
     errors.extend(reject_unknown_keys(obj, path, root_allowed))
     for key in ["version", "status", "principle"]:
         errors.extend(require_string_field(obj, path, key))
     if "last_reviewed" in obj:
         errors.extend(require_string_field(obj, path, "last_reviewed"))
-
     if not isinstance(obj.get("entries"), list):
         errors.append(f"{rel(path)}: entries must be an array")
         return errors
-
     seen_domains: set[str] = set()
+    new_keys = {"governance_authority", "epistemic_support", "verification_status", "lifecycle_status"}
     for index, entry in enumerate(obj.get("entries", [])):
         entry_path = Path(f"{rel(path)}#entries[{index}]")
-        entry_errors = require_keys(entry, entry_path, sorted(entry_allowed))
-        if entry_errors:
-            errors.extend(entry_errors)
+        if not isinstance(entry, dict):
+            errors.extend(require_object(entry, entry_path))
             continue
-        assert isinstance(entry, dict)
-
-        errors.extend(reject_unknown_keys(entry, entry_path, entry_allowed))
-        for key in ["domain", "description", "load_rule", "when_to_use", "when_not_to_use", "status", "notes"]:
-            errors.extend(require_string_field(entry, entry_path, key))
-
         domain = entry.get("domain")
         if isinstance(domain, str):
             if domain in seen_domains:
                 errors.append(f"{rel(entry_path)}: duplicate domain `{domain}`")
-            else:
-                seen_domains.add(domain)
-
-        primary_repo = entry.get("primary_repo")
-        if primary_repo is not None and not isinstance(primary_repo, str):
-            errors.append(f"{rel(entry_path)}: primary_repo must be a string or null")
-
-        status = entry.get("status")
-        if isinstance(status, str) and status not in REGISTRY_ENTRY_STATUSES:
-            allowed = ", ".join(sorted(REGISTRY_ENTRY_STATUSES))
-            errors.append(f"{rel(entry_path)}: invalid status `{status}`; expected one of: {allowed}")
-
-        related_repos = entry.get("related_repos")
-        if not isinstance(related_repos, list):
-            errors.append(f"{rel(entry_path)}: related_repos must be an array")
-            continue
-
-        for repo_index, repo_entry in enumerate(related_repos):
-            repo_path = Path(f"{rel(entry_path)}.related_repos[{repo_index}]")
-            repo_errors = require_keys(repo_entry, repo_path, ["repo", "relationship", "verification"])
-            if repo_errors:
-                errors.extend(repo_errors)
-                continue
-            assert isinstance(repo_entry, dict)
-
-            errors.extend(reject_unknown_keys(repo_entry, repo_path, related_repo_allowed))
-            for key in ["repo", "relationship", "verification"]:
-                errors.extend(require_string_field(repo_entry, repo_path, key))
-            if "notes" in repo_entry:
-                errors.extend(require_string_field(repo_entry, repo_path, "notes", non_empty=False))
-
-            verification = repo_entry.get("verification")
-            if isinstance(verification, str) and verification not in REGISTRY_REPO_VERIFICATIONS:
-                allowed = ", ".join(sorted(REGISTRY_REPO_VERIFICATIONS))
-                errors.append(f"{rel(repo_path)}: invalid verification `{verification}`; expected one of: {allowed}")
+            seen_domains.add(domain)
+        if any(key in entry for key in new_keys):
+            errors.extend(validate_new_registry_entry(entry, entry_path))
+        else:
+            errors.extend(validate_legacy_registry_entry(entry, entry_path))
     return errors
 
 
@@ -268,7 +342,6 @@ def validate_transition(obj: Any, path: Path, machine: dict[str, Any] | None = N
         if machine_errors:
             return machine_errors
         assert machine is not None
-
     from_state = obj.get("from")
     to_state = obj.get("to")
     states = set(machine.get("states", []))
@@ -276,11 +349,9 @@ def validate_transition(obj: Any, path: Path, machine: dict[str, Any] | None = N
         errors.append(f"{rel(path)}: unknown from state `{from_state}`")
     if to_state not in states:
         errors.append(f"{rel(path)}: unknown to state `{to_state}`")
-
     for transition in machine.get("forbidden_transitions", []):
         if isinstance(transition, dict) and transition.get("from") == from_state and transition.get("to") == to_state:
             errors.append(f"{rel(path)}: forbidden transition {from_state} -> {to_state}: {transition.get('reason', 'forbidden')}")
-
     allowed = None
     for transition in machine.get("allowed_transitions", []):
         if isinstance(transition, dict) and transition.get("from") == from_state and transition.get("to") == to_state:
@@ -316,7 +387,6 @@ def validate_path(path: Path) -> list[str]:
     assert obj is not None
     name = path.name
     path_text = rel(path)
-
     if path_text == "registries/REPOSITORY_REGISTRY.json" or name.startswith("repository_registry"):
         return validate_repository_registry(obj, path)
     if name == "claim-lifecycle.machine.json":
@@ -336,10 +406,7 @@ def validate_path(path: Path) -> list[str]:
     if "memory" in name:
         return validate_memory_entry(obj, path)
     if path_text.startswith("fixtures/"):
-        object_errors = require_object(obj, path)
-        if object_errors:
-            return object_errors
-        return [f"{rel(path)}: unrecognized fixture type"]
+        return require_object(obj, path)
     return []
 
 
@@ -356,14 +423,18 @@ def parse_json_directory(directory: str) -> list[str]:
 
 def validate_fixtures() -> list[str]:
     errors: list[str] = []
-    for path in sorted((ROOT / "fixtures" / "valid").glob("*.json")):
-        path_errors = validate_path(path)
-        if path_errors:
-            errors.extend([f"valid fixture failed: {error}" for error in path_errors])
-    for path in sorted((ROOT / "fixtures" / "invalid").glob("*.json")):
-        path_errors = validate_path(path)
-        if not path_errors:
-            errors.append(f"invalid fixture unexpectedly passed: {rel(path)}")
+    valid_dir = ROOT / "fixtures" / "valid"
+    if valid_dir.exists():
+        for path in sorted(valid_dir.glob("*.json")):
+            path_errors = validate_path(path)
+            if path_errors:
+                errors.extend([f"valid fixture failed: {error}" for error in path_errors])
+    invalid_dir = ROOT / "fixtures" / "invalid"
+    if invalid_dir.exists():
+        for path in sorted(invalid_dir.glob("*.json")):
+            path_errors = validate_path(path)
+            if not path_errors:
+                errors.append(f"invalid fixture unexpectedly passed: {rel(path)}")
     return errors
 
 

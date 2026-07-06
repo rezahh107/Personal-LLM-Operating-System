@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "status": "fixture",
+  "principle": "The repository is the starting context, not the prison.",
+  "entries": [
+    {
+      "domain": "personal_llm_os",
+      "description": "Invalid registry fixture with unsupported verification status.",
+      "primary_repo": "rezahh107/Personal-LLM-Operating-System",
+      "related_repos": [],
+      "load_rule": "Load for personal LLM operating behavior.",
+      "when_to_use": "Use for boot and routing.",
+      "when_not_to_use": "Do not use as a replacement for live repository inspection.",
+      "governance_authority": "project_contract",
+      "epistemic_support": "observed",
+      "verification_status": "verified_forever",
+      "lifecycle_status": "active",
+      "notes": "Invalid fixture: verification_status is not in the allowed vocabulary."
+    }
+  ]
+}

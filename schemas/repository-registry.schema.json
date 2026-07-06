@@ -35,23 +35,17 @@
           "load_rule",
           "when_to_use",
           "when_not_to_use",
-          "status",
+          "governance_authority",
+          "epistemic_support",
+          "verification_status",
+          "lifecycle_status",
           "notes"
         ],
         "additionalProperties": false,
         "properties": {
-          "domain": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "primary_repo": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
+          "domain": {"type": "string"},
+          "description": {"type": "string"},
+          "primary_repo": {"type": ["string", "null"]},
           "related_repos": {
             "type": "array",
             "items": {
@@ -59,53 +53,45 @@
               "required": [
                 "repo",
                 "relationship",
-                "verification"
+                "verification_status",
+                "epistemic_support",
+                "lifecycle_status"
               ],
               "additionalProperties": false,
               "properties": {
-                "repo": {
-                  "type": "string"
-                },
-                "relationship": {
-                  "type": "string"
-                },
-                "verification": {
-                  "enum": [
-                    "connector_verified",
-                    "explicit_context",
-                    "inferred_from_name",
-                    "unknown"
-                  ]
-                },
-                "notes": {
-                  "type": "string"
-                }
+                "repo": {"type": "string"},
+                "relationship": {"type": "string"},
+                "verification_status": {"$ref": "#/$defs/verification_status"},
+                "epistemic_support": {"$ref": "#/$defs/epistemic_support"},
+                "lifecycle_status": {"$ref": "#/$defs/lifecycle_status"},
+                "notes": {"type": "string"}
               }
             }
           },
-          "load_rule": {
-            "type": "string"
-          },
-          "when_to_use": {
-            "type": "string"
-          },
-          "when_not_to_use": {
-            "type": "string"
-          },
-          "status": {
-            "enum": [
-              "active",
-              "candidate",
-              "no_verified_repo",
-              "explicit_context_only",
-              "deprecated"
-            ]
-          },
-          "notes": {
-            "type": "string"
-          }
+          "load_rule": {"type": "string"},
+          "when_to_use": {"type": "string"},
+          "when_not_to_use": {"type": "string"},
+          "governance_authority": {"$ref": "#/$defs/governance_authority"},
+          "epistemic_support": {"$ref": "#/$defs/epistemic_support"},
+          "verification_status": {"$ref": "#/$defs/verification_status"},
+          "lifecycle_status": {"$ref": "#/$defs/lifecycle_status"},
+          "notes": {"type": "string"}
         }
       }
+    }
+  },
+  "$defs": {
+    "governance_authority": {
+      "enum": ["advisory", "accepted_decision", "project_contract", "frozen_contract"]
+    },
+    "epistemic_support": {
+      "enum": ["unsupported", "source_supported", "observed", "reproduced", "test_verified", "expert_verified"]
+    },
+    "verification_status": {
+      "enum": ["not_checked", "statically_inspected", "source_supported", "tool_observed", "reproduced", "test_verified", "fixture_verified", "externally_reviewed", "not_verifiable", "insufficient_evidence"]
+    },
+    "lifecycle_status": {
+      "enum": ["candidate", "active", "stale", "superseded", "deprecated", "rejected", "archived"]
     }
   }
 }

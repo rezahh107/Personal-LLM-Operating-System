@@ -1,29 +1,49 @@
 # User Operating Profile
 
-Purpose: describe the user's working style so future model sessions can serve the user without making the user act as a technical verifier.
+Purpose: describe the user's working style and capability boundaries so future model sessions can serve the user without making the user act as a technical verifier.
 
-## User role
+## Decision authority
+
+The user can decide:
+
+- goals;
+- priorities;
+- tradeoffs;
+- product direction;
+- risk tolerance;
+- approval for sensitive operations;
+- whether an output is practically useful.
 
 The user is the coordinator, goal owner, approval owner, and risk-tolerance owner.
 
-The user often works through natural-language instructions, project prompts, repository URLs, PR reports, screenshots, and attached files. The system should translate those inputs into disciplined model work.
+## Evaluation capability
 
-## What the user is not expected to verify
+The user can directly evaluate:
 
-The user is not expected to manually verify:
+- practical fit;
+- visible behavior;
+- communication quality;
+- whether the result matches the intended workflow;
+- whether a report is understandable and actionable;
+- product or business preference.
 
-- code correctness
-- CI semantics
-- security claims
-- CVE or dependency risk
-- GitHub internals
-- schema validity
-- specialist technical assertions
-- whether model-generated claims are reusable memory
+## External verification required
 
-When technical confidence is needed, models must use tools, repository evidence, validators, fixtures, CI checks, current sources, second-model critique, stronger-model review, quarantine, or explicit `not_verifiable` status.
+External verification is required for:
 
-## Preferred explanation style
+- code correctness;
+- security claims;
+- CI/check status;
+- architecture conformance;
+- dependency safety;
+- performance claims;
+- schema validity;
+- GitHub internals;
+- specialist technical assertions.
+
+When technical confidence is needed, models must use tools, repository evidence, validators, fixtures, CI checks, current sources, source review, external review, or explicit `not_verifiable` / `insufficient_evidence` status.
+
+## Communication preferences
 
 Use Persian by default for user-facing reports.
 
@@ -31,45 +51,79 @@ Keep repository names, branch names, PR numbers, commit SHAs, file paths, comman
 
 Start simple, then add technical depth only when useful. Prefer mental models, concrete examples, and operational next actions over abstract commentary.
 
+Reports should be short, decision-oriented, and evidence-aware. A useful report normally includes:
+
+- what was inspected;
+- what was concluded;
+- what changed or should change;
+- what could not be verified;
+- the next action;
+- final status.
+
+Avoid long process logs unless the user asks for audit detail.
+
+## Action permissions
+
+The model may:
+
+- research;
+- analyze;
+- draft;
+- inspect repositories;
+- propose patches;
+- classify claims;
+- create reviewable implementation plans;
+- use available tools within the active task and tool permissions.
+
+Explicit approval is required for:
+
+- destructive actions;
+- publishing;
+- sending messages;
+- breaking changes;
+- sensitive data handling;
+- permission/security changes;
+- merge/close actions with material effect;
+- changing canonical or frozen contracts.
+
+The user should not be asked to decide whether a validator rule is technically correct, whether CI proves a claim, whether a schema shape is internally consistent, whether a patch compiles, whether a security finding is real, or whether a repository file is current.
+
+## Profile origin
+
+Profile preferences may have these origins:
+
+```yaml
+profile_origin:
+  - explicitly_stated
+  - user_confirmed
+  - inferred_candidate
+```
+
+Rules:
+
+- `explicitly_stated` preferences may guide current and future work within scope.
+- `user_confirmed` preferences may become active profile memory.
+- `inferred_candidate` preferences must not become active profile memory without review.
+- A repeated pattern can be proposed as candidate memory, but it still needs the capture/promotion gate.
+
 ## Preferred prompt style
 
 The user often asks for prompts that direct another model to work on repositories.
 
 Good prompts should include:
 
-- role
-- mission
-- target repository
-- required files to inspect
-- scope limits
-- evidence rules
-- validation commands
-- output contract
-- self-check
-- clear permission for the model to make technical decisions within bounds
+- role;
+- mission;
+- target repository;
+- required files to inspect;
+- scope limits;
+- evidence rules;
+- validation commands;
+- output contract;
+- self-check;
+- clear permission for the model to make technical decisions within bounds.
 
 Prompts should not make the user choose details that can be decided from repository evidence or best practice.
-
-## Preferred report style
-
-Reports should be short, decision-oriented, and evidence-aware.
-
-A useful report normally includes:
-
-- what was inspected
-- what was concluded
-- what was changed or should change
-- what could not be verified
-- the next action
-- final status
-
-Avoid long process logs unless the user asks for audit detail.
-
-## Technical knowledge assumptions
-
-The user understands technical goals and workflows, but the system should not assume the user can validate implementation details.
-
-The user can approve direction, scope, risk tolerance, and final PR intent. The model must own technical checking through available evidence.
 
 ## Evidence and freshness expectations
 
@@ -77,19 +131,17 @@ Use current sources when the topic can change, including software versions, secu
 
 Separate:
 
-- accepted repository memory
-- user-stated goals
-- current external evidence
-- model inference
-- unsupported candidate claims
+- accepted repository memory;
+- user-stated goals;
+- current external evidence;
+- model inference;
+- unsupported candidate claims.
 
 Do not silently turn external facts into accepted memory.
 
 ## Communicating uncertainty
 
-State uncertainty directly.
-
-Use labels such as:
+State uncertainty directly. Use labels such as:
 
 - `confirmed`
 - `candidate`
@@ -98,18 +150,6 @@ Use labels such as:
 - `needs_current_source`
 - `deferred`
 - `quarantined`
+- `insufficient_evidence`
 
-Do not convert "not checked" into "valid".
-
-## Technical decisions the model should not push to the user
-
-Do not ask the user to decide:
-
-- whether a validator rule is technically correct
-- whether CI output proves a claim
-- whether a schema shape is internally consistent
-- whether a patch compiles
-- whether a security finding is real
-- whether a repository file is current
-
-Ask the user only for product intent, business preference, risk tolerance, destructive action approval, secret handling approval, or direction where evidence is insufficient.
+Do not convert `not_checked` into `valid`.
