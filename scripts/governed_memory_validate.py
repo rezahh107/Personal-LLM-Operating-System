@@ -349,7 +349,10 @@ def validate_typed_json(obj: Any, path: Path) -> list[str]:
     if "memory" in name:
         return validate_memory_entry(obj, path)
     if path_text.startswith("fixtures/"):
-        return require_object(obj, path)
+        object_errors = require_object(obj, path)
+        if object_errors:
+            return object_errors
+        return [f"{rel(path)}: unrecognized fixture type"]
     return []
 
 
