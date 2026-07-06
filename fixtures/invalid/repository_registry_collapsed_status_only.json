@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "status": "fixture",
+  "principle": "The repository is the starting context, not the prison.",
+  "entries": [
+    {
+      "domain": "personal_llm_os",
+      "description": "Invalid registry fixture that collapses multiple meanings into one status.",
+      "primary_repo": "rezahh107/Personal-LLM-Operating-System",
+      "related_repos": [],
+      "load_rule": "Load for personal LLM operating behavior.",
+      "when_to_use": "Use for boot and routing.",
+      "when_not_to_use": "Do not use as a replacement for live repository inspection.",
+      "status": "active_and_verified",
+      "notes": "Invalid fixture: status is collapsed and required separated fields are missing."
+    }
+  ]
+}
