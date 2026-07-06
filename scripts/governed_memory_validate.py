@@ -37,6 +37,7 @@ VERIFICATION_STATUSES = {
 }
 LIFECYCLE_STATUSES = {"candidate", "active", "stale", "superseded", "deprecated", "rejected", "archived"}
 TRUTH_STATUSES = {"evidence-backed", "derived_with_lineage", "explicitly_proposed", "connected_to_structured_gap", "not_applicable"}
+DECISION_STATUSES = {"accepted", "candidate", "rejected", "blocked", "superseded"}
 SESSION_CONTINUITY_REQUIRED = [
     "capsule_id",
     "capsule_version",
@@ -197,14 +198,18 @@ def validate_session_continuity(obj: Any, path: Path) -> list[str]:
         "do_not_repeat_or_assume",
         "candidate_memory_captures",
     ]
+    type_errors: list[str] = []
     for field in list_fields:
         if not isinstance(obj.get(field), list):
-            errors.append(f"{rel(path)}: `{field}` must be an array")
+            type_errors.append(f"{rel(path)}: `{field}` must be an array")
 
     if not isinstance(obj.get("current_work_state"), dict):
-        errors.append(f"{rel(path)}: `current_work_state` must be an object")
+        type_errors.append(f"{rel(path)}: `current_work_state` must be an object")
     if not isinstance(obj.get("completeness_check"), dict):
-        errors.append(f"{rel(path)}: `completeness_check` must be an object")
+        type_errors.append(f"{rel(path)}: `completeness_check` must be an object")
+    if type_errors:
+        errors.extend(type_errors)
+        return errors
 
     for index, decision in enumerate(obj.get("confirmed_decisions", [])):
         decision_path = Path(f"{rel(path)}.confirmed_decisions[{index}]")
@@ -216,6 +221,7 @@ def validate_session_continuity(obj: Any, path: Path) -> list[str]:
         errors.extend(decision_errors)
         if decision_errors or not isinstance(decision, dict):
             continue
+        errors.extend(enum_error(decision_path, "decision_status", decision.get("decision_status"), DECISION_STATUSES))
         errors.extend(enum_error(decision_path, "truth_status", decision.get("truth_status"), TRUTH_STATUSES))
         errors.extend(enum_error(decision_path, "verification_status", decision.get("verification_status"), VERIFICATION_STATUSES))
         evidence_refs = decision.get("evidence_refs")
