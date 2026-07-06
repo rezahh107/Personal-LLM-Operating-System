@@ -2,7 +2,7 @@
 """Minimal foundation validator.
 
 This script intentionally avoids third-party dependencies. It checks that the
-repository foundation files exist and that JSON ledgers/schemas parse.
+repository foundation files exist and that JSON ledgers/schemas/registries parse.
 """
 
 from __future__ import annotations
@@ -18,15 +18,24 @@ REQUIRED_FILES = [
     "docs/PURPOSE.md",
     "docs/PERSONAL_USE_ASSUMPTIONS.md",
     "docs/REPOSITORY_AS_LLM_MEMORY.md",
+    "docs/USER_OPERATING_PROFILE.md",
     "protocols/START_HERE_FOR_MODELS.md",
+    "protocols/BOOT_PROTOCOL.md",
+    "protocols/SESSION_ROUTING_PIPELINE.md",
+    "protocols/RESPONSE_DEPTH_POLICY.md",
+    "protocols/EXTERNAL_KNOWLEDGE_POLICY.md",
+    "protocols/KNOWLEDGE_CAPTURE_PROTOCOL.md",
+    "protocols/MEMORY_REVIEW_AND_DECAY.md",
     "protocols/IDEA_MATURATION_PIPELINE.md",
     "protocols/CLAIM_LIFECYCLE.md",
     "protocols/HANDOFF_CONTRACT.md",
     "schemas/claim.schema.json",
     "schemas/evidence.schema.json",
     "schemas/handoff-package.schema.json",
+    "schemas/repository-registry.schema.json",
     "ledgers/CLAIM_LEDGER.json",
     "ledgers/EVIDENCE_LEDGER.json",
+    "registries/REPOSITORY_REGISTRY.json",
 ]
 
 JSON_FILES = [
@@ -35,10 +44,12 @@ JSON_FILES = [
     "schemas/handoff-package.schema.json",
     "schemas/memory-entry.schema.json",
     "schemas/behavioral-rule.schema.json",
+    "schemas/repository-registry.schema.json",
     "ledgers/CLAIM_LEDGER.json",
     "ledgers/EVIDENCE_LEDGER.json",
     "ledgers/MODEL_DECISION_LEDGER.json",
     "ledgers/QUARANTINE_LEDGER.json",
+    "registries/REPOSITORY_REGISTRY.json",
 ]
 
 BANNED_ASSURANCE_PHRASES = [

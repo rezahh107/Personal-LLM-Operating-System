@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/repository-registry.schema.json",
+  "title": "Repository Registry",
+  "type": "object",
+  "required": [
+    "version",
+    "status",
+    "principle",
+    "entries"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "last_reviewed": {
+      "type": "string"
+    },
+    "principle": {
+      "type": "string"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "domain",
+          "description",
+          "primary_repo",
+          "related_repos",
+          "load_rule",
+          "when_to_use",
+          "when_not_to_use",
+          "status",
+          "notes"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "domain": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "primary_repo": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "related_repos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "repo",
+                "relationship",
+                "verification"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "repo": {
+                  "type": "string"
+                },
+                "relationship": {
+                  "type": "string"
+                },
+                "verification": {
+                  "enum": [
+                    "connector_verified",
+                    "explicit_context",
+                    "inferred_from_name",
+                    "unknown"
+                  ]
+                },
+                "notes": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "load_rule": {
+            "type": "string"
+          },
+          "when_to_use": {
+            "type": "string"
+          },
+          "when_not_to_use": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "active",
+              "candidate",
+              "no_verified_repo",
+              "explicit_context_only",
+              "deprecated"
+            ]
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

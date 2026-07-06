@@ -24,24 +24,42 @@ The user is the coordinator and goal owner, not the technical verifier for most 
 6. **Governed Memory Runtime** — model-facing scripts, fixtures, ledgers, and CI checks prevent the repository from becoming a prose-only policy book.
 7. **Domain Adapters** — audit, GitHub repair, prompt engineering, image workflows, and other domains inherit the parent protocol.
 
+## Boot and routing layer
+
+The repository now also defines the first architecture layer for starting future model sessions and routing user requests:
+
+1. **Boot Protocol** — `protocols/BOOT_PROTOCOL.md`
+2. **User Operating Profile** — `docs/USER_OPERATING_PROFILE.md`
+3. **Session / Context Routing** — `protocols/SESSION_ROUTING_PIPELINE.md`
+4. **Response Depth Policy** — `protocols/RESPONSE_DEPTH_POLICY.md`
+5. **External Knowledge Policy** — `protocols/EXTERNAL_KNOWLEDGE_POLICY.md`
+6. **Knowledge Capture Protocol** — `protocols/KNOWLEDGE_CAPTURE_PROTOCOL.md`
+7. **Memory Review and Decay** — `protocols/MEMORY_REVIEW_AND_DECAY.md`
+8. **Repository Registry / Tool Map** — `registries/REPOSITORY_REGISTRY.json`
+
 ## Start here
 
 Future model sessions should begin with:
 
 ```text
 AGENTS.md
+protocols/BOOT_PROTOCOL.md
+docs/USER_OPERATING_PROFILE.md
 protocols/START_HERE_FOR_MODELS.md
+protocols/SESSION_ROUTING_PIPELINE.md
+protocols/RESPONSE_DEPTH_POLICY.md
 protocols/IDEA_MATURATION_PIPELINE.md when the topic is new or strategic
 ```
 
 ## Current status
 
 ```yaml
-status: governed_memory_runtime_mvp
+status: boot_routing_registry_foundation
 scope: personal_llm_orchestration
 primary_user_role: coordinator_orchestrator
 technical_verifier_assumption: false
 user_runs_cli_manually: false
+automation_scope: architecture_first
 ```
 
 This repository is intentionally foundation-first. Domain-specific systems, including audit and post-merge scanning, should be added as adapters after the parent behavior protocol stabilizes.

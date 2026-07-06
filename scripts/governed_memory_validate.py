@@ -18,6 +18,8 @@ STATES = {"draft", "candidate", "challenged", "validated", "accepted", "quaranti
 SOURCES = {"user", "llm", "tool", "validator", "ci", "web", "repo"}
 EXEC_HINTS = ["ran the tests", "tests passed", "all tests passed", "workflow passed", "ci passed"]
 AUTHORITY_HINTS = ["proved", "ready", "fully verified"]
+REGISTRY_ENTRY_STATUSES = {"active", "candidate", "no_verified_repo", "explicit_context_only", "deprecated"}
+REGISTRY_REPO_VERIFICATIONS = {"connector_verified", "explicit_context", "inferred_from_name", "unknown"}
 
 
 def rel(path: Path) -> str:
@@ -43,6 +45,21 @@ def require_keys(obj: Any, path: Path, keys: list[str]) -> list[str]:
     if errors:
         return errors
     return [f"{rel(path)}: missing required key `{key}`" for key in keys if key not in obj]
+
+
+def reject_unknown_keys(obj: Any, path: Path, allowed_keys: set[str]) -> list[str]:
+    if not isinstance(obj, dict):
+        return []
+    return [f"{rel(path)}: unknown key `{key}`" for key in sorted(set(obj) - allowed_keys)]
+
+
+def require_string_field(obj: dict[str, Any], path: Path, key: str, *, non_empty: bool = True) -> list[str]:
+    value = obj.get(key)
+    if not isinstance(value, str):
+        return [f"{rel(path)}: `{key}` must be a string"]
+    if non_empty and not value:
+        return [f"{rel(path)}: `{key}` must be a non-empty string"]
+    return []
 
 
 def has_any(text: str, phrases: list[str]) -> str | None:
@@ -125,6 +142,91 @@ def validate_ledger(obj: Any, path: Path) -> list[str]:
     assert isinstance(obj, dict)
     if not isinstance(obj.get("entries"), list):
         errors.append(f"{rel(path)}: entries must be an array")
+    return errors
+
+
+def validate_repository_registry(obj: Any, path: Path) -> list[str]:
+    root_allowed = {"version", "status", "last_reviewed", "principle", "entries"}
+    entry_allowed = {
+        "domain",
+        "description",
+        "primary_repo",
+        "related_repos",
+        "load_rule",
+        "when_to_use",
+        "when_not_to_use",
+        "status",
+        "notes",
+    }
+    related_repo_allowed = {"repo", "relationship", "verification", "notes"}
+
+    errors = require_keys(obj, path, ["version", "status", "principle", "entries"])
+    if errors:
+        return errors
+    assert isinstance(obj, dict)
+
+    errors.extend(reject_unknown_keys(obj, path, root_allowed))
+    for key in ["version", "status", "principle"]:
+        errors.extend(require_string_field(obj, path, key))
+    if "last_reviewed" in obj:
+        errors.extend(require_string_field(obj, path, "last_reviewed"))
+
+    if not isinstance(obj.get("entries"), list):
+        errors.append(f"{rel(path)}: entries must be an array")
+        return errors
+
+    seen_domains: set[str] = set()
+    for index, entry in enumerate(obj.get("entries", [])):
+        entry_path = Path(f"{rel(path)}#entries[{index}]")
+        entry_errors = require_keys(entry, entry_path, sorted(entry_allowed))
+        if entry_errors:
+            errors.extend(entry_errors)
+            continue
+        assert isinstance(entry, dict)
+
+        errors.extend(reject_unknown_keys(entry, entry_path, entry_allowed))
+        for key in ["domain", "description", "load_rule", "when_to_use", "when_not_to_use", "status", "notes"]:
+            errors.extend(require_string_field(entry, entry_path, key))
+
+        domain = entry.get("domain")
+        if isinstance(domain, str):
+            if domain in seen_domains:
+                errors.append(f"{rel(entry_path)}: duplicate domain `{domain}`")
+            else:
+                seen_domains.add(domain)
+
+        primary_repo = entry.get("primary_repo")
+        if primary_repo is not None and not isinstance(primary_repo, str):
+            errors.append(f"{rel(entry_path)}: primary_repo must be a string or null")
+
+        status = entry.get("status")
+        if isinstance(status, str) and status not in REGISTRY_ENTRY_STATUSES:
+            allowed = ", ".join(sorted(REGISTRY_ENTRY_STATUSES))
+            errors.append(f"{rel(entry_path)}: invalid status `{status}`; expected one of: {allowed}")
+
+        related_repos = entry.get("related_repos")
+        if not isinstance(related_repos, list):
+            errors.append(f"{rel(entry_path)}: related_repos must be an array")
+            continue
+
+        for repo_index, repo_entry in enumerate(related_repos):
+            repo_path = Path(f"{rel(entry_path)}.related_repos[{repo_index}]")
+            repo_errors = require_keys(repo_entry, repo_path, ["repo", "relationship", "verification"])
+            if repo_errors:
+                errors.extend(repo_errors)
+                continue
+            assert isinstance(repo_entry, dict)
+
+            errors.extend(reject_unknown_keys(repo_entry, repo_path, related_repo_allowed))
+            for key in ["repo", "relationship", "verification"]:
+                errors.extend(require_string_field(repo_entry, repo_path, key))
+            if "notes" in repo_entry:
+                errors.extend(require_string_field(repo_entry, repo_path, "notes", non_empty=False))
+
+            verification = repo_entry.get("verification")
+            if isinstance(verification, str) and verification not in REGISTRY_REPO_VERIFICATIONS:
+                allowed = ", ".join(sorted(REGISTRY_REPO_VERIFICATIONS))
+                errors.append(f"{rel(repo_path)}: invalid verification `{verification}`; expected one of: {allowed}")
     return errors
 
 
@@ -215,6 +317,8 @@ def validate_path(path: Path) -> list[str]:
     name = path.name
     path_text = rel(path)
 
+    if path_text == "registries/REPOSITORY_REGISTRY.json" or name.startswith("repository_registry"):
+        return validate_repository_registry(obj, path)
     if name == "claim-lifecycle.machine.json":
         return validate_state_machine(obj, path)
     if name == "STATE_TRANSITION_LEDGER.json":
@@ -265,10 +369,12 @@ def validate_fixtures() -> list[str]:
 
 def validate_repository() -> list[str]:
     errors: list[str] = []
-    for directory in ["schemas", "ledgers", "templates"]:
+    for directory in ["schemas", "ledgers", "templates", "registries"]:
         errors.extend(parse_json_directory(directory))
     errors.extend(validate_path(MACHINE_PATH))
     for path in sorted((ROOT / "ledgers").glob("*.json")):
+        errors.extend(validate_path(path))
+    for path in sorted((ROOT / "registries").glob("*.json")):
         errors.extend(validate_path(path))
     errors.extend(validate_fixtures())
     return errors
