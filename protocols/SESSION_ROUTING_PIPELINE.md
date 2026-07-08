@@ -31,25 +31,12 @@ Do not collapse them into one status field.
 
 ### command trigger
 
-Use when the user gives a command-style phrase such as:
-
-```text
-طبق دستور:
-https://github.com/rezahh107/Personal-LLM-Operating-System/
-شروع
-```
-
-or:
-
-```text
-طبق دستور:
-https://github.com/rezahh107/Personal-LLM-Operating-System/
-ایده خام
-```
+Use when the user gives a command-style phrase.
 
 Load:
 
 - `protocols/COMMAND_ROUTING_PROTOCOL.md`
+- `registries/COMMAND_REGISTRY.json` for exact command behavior and expected first response
 - `docs/USER_OPERATING_PROFILE.md`
 - additional files only after the command route requires them
 
@@ -62,9 +49,9 @@ Do not:
 
 Output behavior:
 
-- for `شروع`: `آماده‌ام. امروز می‌خوای چکار کنی؟`
-- for `ایده خام`: `آماده‌ام. ایده خامت چیه؟`
+- use `expected_first_response` from `registries/COMMAND_REGISTRY.json` for recognized commands
 - for unknown commands: ask for clarification briefly
+- after the first command response, continue ordinary routing for the user's follow-up task
 
 ### raw idea capture
 
@@ -322,3 +309,91 @@ Output behavior:
 - authority map
 - validation/not-run status
 - next safe action
+
+### handover intake
+
+Use when the user provides a session continuity capsule, handover package, manifest, or resume prompt from another chat or model.
+
+Load:
+
+- `protocols/HANDOVER_INTAKE_PROTOCOL.md`
+- `protocols/SESSION_CONTINUITY_PROTOCOL.md` if the package is session-scoped
+- `protocols/PROJECT_CONTINUITY_PROTOCOL.md` if the package is project-scoped
+- the structured state before rendered Markdown views
+
+Do not:
+
+- treat prior model output as proof
+- ignore conflicts between structured state and rendered views
+- continue from a candidate action as if it were accepted
+
+Output behavior:
+
+- compact intake report
+- accepted decisions
+- candidate items
+- evidence gaps
+- active blockers
+- next action
+
+### document generation
+
+Use when the user asks for a reusable document, report, handbook section, policy, checklist, or final write-up.
+
+Load:
+
+- relevant style/profile files
+- existing document structure
+- `protocols/MEMORY_PROMOTION_RULES.md` if the document becomes repository memory
+- `protocols/INSTRUCTION_TRUST_POLICY.md` if authority is assigned
+- `protocols/PROVENANCE_POLICY.md` if sources and derivation matter
+
+Do not:
+
+- invent policy authority
+- mix candidate claims with accepted facts
+
+Output behavior:
+
+- clean document-ready artifact
+- explicit assumptions and open items when needed
+
+### image workflow
+
+Use when the user asks for visual workflow support.
+
+Load:
+
+- `registries/REPOSITORY_REGISTRY.json`
+- any relevant visual workflow adapter if it exists
+- attached files or visual references supplied by the user
+- `protocols/INSTRUCTION_TRUST_POLICY.md` for attached artifacts
+
+Do not:
+
+- convert visual preferences into permanent memory without capture review
+- bypass attached-artifact trust classification
+
+Output behavior:
+
+- visual prompt, edit instruction, or visual audit
+- composition constraints when relevant
+- candidate memory suggestion if a stable preference emerges
+
+### general conversation
+
+Use when no specialized route is needed.
+
+Load:
+
+- nothing extra by default
+
+Do not:
+
+- force a repository workflow
+- create memory unless the user asks or the insight is clearly reusable
+
+Output behavior:
+
+- natural, direct response
+- optional one-step suggestion when useful
