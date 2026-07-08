@@ -8,6 +8,25 @@ Do not confuse first-response usefulness with idea maturity.
 
 A mature idea has passed through framing, decomposition, challenge, multi-perspective review, evidence collection, assumption testing, alternative generation, synthesis, and memory classification.
 
+## Raw idea incubation
+
+Raw ideas may first live in `incubator/raw-ideas/` before entering this maturation pipeline.
+
+A raw idea is not yet a claim, decision, accepted memory, protocol, or implementation plan. It preserves the user's core idea so it is not lost.
+
+Model-captured raw ideas should preserve:
+
+- the core idea before critique;
+- the user's raw intent;
+- conversation context;
+- why the idea may matter later;
+- what the idea is not;
+- possible future development;
+- open questions;
+- next review trigger.
+
+A raw idea enters the maturation pipeline only when the user asks to mature it, it reappears in later work, or it becomes relevant to a concrete repository decision.
+
 ## Maturity levels
 
 ```text
