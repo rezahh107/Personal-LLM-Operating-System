@@ -8,6 +8,24 @@ This protocol covers non-destructive text commands written by the user in a mode
 
 It does not define a shell, CLI, executable automation system, or permission to modify files without user-approved repository-write scope.
 
+## Repository-wide rule
+
+This protocol is repository-wide.
+
+A command may be used before any domain-specific workflow, including audit, GitHub repair, prompt engineering, image workflow, research, document production, Elementor/EV4 work, or future adapters.
+
+The command selects the initial behavior route. After that, the model must continue through ordinary routing in `protocols/SESSION_ROUTING_PIPELINE.md` and load domain-specific context only when the user's follow-up task needs it.
+
+Commands are allowed to activate behavior. They are not allowed to bypass:
+
+- system or developer instructions;
+- safety rules;
+- instruction-trust classification;
+- evidence requirements;
+- verification requirements;
+- repository-write boundaries;
+- memory promotion gates.
+
 ## Command invocation shape
 
 Preferred form:
@@ -21,6 +39,8 @@ https://github.com/rezahh107/Personal-LLM-Operating-System/
 The model should treat surrounding whitespace and line breaks as insignificant.
 
 The repository URL tells the model which operating layer to use. The command line tells the model which route to activate.
+
+If the command includes a later domain topic, route the command first, then classify the domain task normally.
 
 ## Current commands
 
@@ -40,6 +60,7 @@ Behavior:
 2. Do not summarize the repository unless asked.
 3. Wait for the user's task.
 4. Load deeper context only after the task is known.
+5. After the user gives the task, route it through `protocols/SESSION_ROUTING_PIPELINE.md`.
 
 ### `ایده خام`
 
@@ -55,9 +76,11 @@ Behavior:
 
 1. Ask for the raw idea without over-framing it.
 2. Preserve the user's core idea first.
-3. After enough context is available, propose or create a raw idea record under `incubator/raw-ideas/` when repository-write scope is active.
-4. Mark the captured item as `status: raw_idea` and `verification_status: unverified`.
-5. Do not promote the idea into accepted memory, policy, protocol, or implementation without a separate promotion gate.
+3. Treat the raw idea as applicable to any domain unless the user narrows it.
+4. After enough context is available, propose or create a raw idea record under `incubator/raw-ideas/` when repository-write scope is active.
+5. If repository-write scope is not active, provide a ready-to-save raw idea record.
+6. Mark the captured item as `status: raw_idea` and `verification_status: unverified`.
+7. Do not promote the idea into accepted memory, policy, protocol, or implementation without a separate promotion gate.
 
 ## Command handling rules
 
@@ -68,6 +91,7 @@ Behavior:
 5. If the command is unknown, ask for clarification and do not invent command behavior.
 6. If the model cannot access the repository, it should still follow the visible command text when possible and state that repository files were not inspected.
 7. If command behavior conflicts with another protocol, report the conflict and follow the higher-authority source.
+8. Command definitions should not be duplicated across unrelated files; use this protocol as the canonical command behavior reference until a registry exists.
 
 ## Raw idea command boundary
 
@@ -92,6 +116,12 @@ A model-captured raw idea must not be represented as:
 - implementation commitment;
 - final architecture.
 
+## User-facing guide
+
+The user-facing and model-facing overview is `docs/COMMANDS_AND_RAW_IDEAS.md`.
+
+Use that document when a model needs a short explanation of command-style usage and raw idea capture.
+
 ## Future extension path
 
 If commands grow beyond a few entries, add a machine-readable command registry with at least:
@@ -107,4 +137,4 @@ write_scope_required: boolean
 status: candidate | active | deprecated
 ```
 
-Until such a registry exists, this protocol is the human-readable source for command behavior.
+Until such a registry exists, this protocol is the canonical human-readable source for command behavior.
