@@ -1,22 +1,22 @@
 {
-  "version": "0.2.0",
-  "status": "trust_provenance_verification_hardened",
-  "last_reviewed": "2026-07-06",
+  "version": "0.2.1",
+  "status": "raw_idea_incubator_and_command_routing_seeded",
+  "last_reviewed": "2026-07-08",
   "principle": "The repository is the starting context, not the prison.",
   "entries": [
     {
       "domain": "personal_llm_os",
-      "description": "Personal operating layer for booting, routing, governing, and reusing work with language models.",
+      "description": "Personal operating layer for booting, command routing, raw idea incubation, request routing, governance, and reusable work with language models.",
       "primary_repo": "rezahh107/Personal-LLM-Operating-System",
       "related_repos": [],
-      "load_rule": "Load first when the user asks to boot a model session, route a request, preserve operating memory, or design personal LLM workflow rules.",
-      "when_to_use": "Use for session boot, user profile, response depth, context routing, knowledge capture, memory governance, trust policy, provenance, verification, and registry lookup.",
-      "when_not_to_use": "Do not treat it as a replacement for live GitHub inspection, web/current sources, attached files, or domain repositories.",
+      "load_rule": "Load first when the user asks to boot a model session, invoke a repository command, capture a raw idea, route a request, preserve operating memory, or design personal LLM workflow rules.",
+      "when_to_use": "Use for session boot, command routing, raw idea capture, user profile, response depth, context routing, knowledge capture, memory governance, trust policy, provenance, verification, and registry lookup.",
+      "when_not_to_use": "Do not treat it as a replacement for live GitHub inspection, web/current sources, attached files, or domain repositories. Do not treat raw ideas as accepted memory or verified claims.",
       "governance_authority": "project_contract",
       "epistemic_support": "observed",
       "verification_status": "tool_observed",
       "lifecycle_status": "active",
-      "notes": "Repository existence, default branch, and concept were verified from live connector evidence in this hardening pass."
+      "notes": "Repository existence and default branch were verified from live connector evidence. Raw idea incubator and command routing were seeded as architecture-first behavior, not as a complete command registry or automation runtime."
     },
     {
       "domain": "prompt_engineering",
