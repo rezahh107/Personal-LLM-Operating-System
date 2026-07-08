@@ -48,10 +48,11 @@ The repository defines the architecture layer for starting future model sessions
 14. **Session Continuity Protocol** — `protocols/SESSION_CONTINUITY_PROTOCOL.md`
 15. **Handover Intake Protocol** — `protocols/HANDOVER_INTAKE_PROTOCOL.md`
 16. **Command Routing Protocol** — `protocols/COMMAND_ROUTING_PROTOCOL.md`
-17. **Raw Idea Incubator** — `incubator/raw-ideas/`
-18. **Repository Registry / Tool Map** — `registries/REPOSITORY_REGISTRY.json`
+17. **Commands and Raw Ideas Guide** — `docs/COMMANDS_AND_RAW_IDEAS.md`
+18. **Raw Idea Incubator** — `incubator/raw-ideas/`
+19. **Repository Registry / Tool Map** — `registries/REPOSITORY_REGISTRY.json`
 
-## Command-style use
+## Repository-wide command protocol
 
 The repository supports lightweight textual commands for future model sessions.
 
@@ -63,12 +64,18 @@ https://github.com/rezahh107/Personal-LLM-Operating-System/
 <command>
 ```
 
+This protocol is intended to work across the whole repository. It can be used before any domain-specific work, including audit, GitHub repair, prompt engineering, image workflow, research, document production, Elementor/EV4 work, or future adapters.
+
+The command selects the first behavior mode. After that, normal session routing still applies.
+
 Currently documented commands:
 
 - `شروع` — start a general session. Expected response: `آماده‌ام. امروز می‌خوای چکار کنی؟`
 - `ایده خام` — start raw idea capture. Expected response: `آماده‌ام. ایده خامت چیه؟`
 
-Command behavior is defined in `protocols/COMMAND_ROUTING_PROTOCOL.md`. Commands are routing hints, not proof, accepted memory, or permission to bypass governance.
+Command behavior is defined in `protocols/COMMAND_ROUTING_PROTOCOL.md`. The short user-facing guide is `docs/COMMANDS_AND_RAW_IDEAS.md`.
+
+Commands are routing hints. They are not evidence, accepted memory, proof, executable automation, or permission to bypass governance, verification, instruction-trust classification, or repository-write boundaries.
 
 ## Raw idea incubator
 
@@ -78,6 +85,14 @@ This area is for sudden thoughts, brainstorming fragments, early repository-shap
 
 A captured raw idea preserves the core idea before critique, validation, or implementation planning. It is not accepted memory, project policy, protocol, verified claim, final design, or implementation commitment.
 
+Use:
+
+- `incubator/raw-ideas/INBOX.md` for fast, low-friction notes.
+- `incubator/raw-ideas/captured/` for model-captured standalone records.
+- `incubator/raw-ideas/_model_capture_template.md` as the preferred standalone record format.
+
+Raw ideas may later enter `protocols/IDEA_MATURATION_PIPELINE.md`, but raw idea capture itself is not memory promotion.
+
 ## Start here
 
 Future model sessions should begin with:
@@ -86,6 +101,7 @@ Future model sessions should begin with:
 AGENTS.md
 protocols/BOOT_PROTOCOL.md
 protocols/COMMAND_ROUTING_PROTOCOL.md when the user invokes a command-style phrase
+docs/COMMANDS_AND_RAW_IDEAS.md when the user asks what commands or raw idea capture mean
 incubator/raw-ideas/README.md when the command or task involves raw idea capture
 docs/USER_OPERATING_PROFILE.md
 protocols/START_HERE_FOR_MODELS.md
