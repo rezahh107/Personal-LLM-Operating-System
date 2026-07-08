@@ -83,6 +83,24 @@ JSON_FILES = [
     "fixtures/invalid/session_continuity_invalid_decision_status.json",
 ]
 
+REQUIRED_SESSION_ROUTE_HEADINGS = [
+    "### command trigger",
+    "### raw idea capture",
+    "### quick answer",
+    "### prompt generation",
+    "### research / web search",
+    "### GitHub / repository work",
+    "### idea maturation",
+    "### implementation / patch",
+    "### audit / review",
+    "### session continuity",
+    "### project handover",
+    "### handover intake",
+    "### document generation",
+    "### image workflow",
+    "### general conversation",
+]
+
 BANNED_ASSURANCE_PHRASES = [
     "safe for " + "production",
     "fully " + "verified",
@@ -114,6 +132,19 @@ def parse_json_files() -> list[str]:
             json.loads(path.read_text(encoding="utf-8"))
         except Exception as exc:  # pragma: no cover - diagnostic path
             errors.append(f"invalid JSON in {rel}: {exc}")
+    return errors
+
+
+def validate_session_routes() -> list[str]:
+    errors: list[str] = []
+    path = ROOT / "protocols/SESSION_ROUTING_PIPELINE.md"
+    try:
+        text = path.read_text(encoding="utf-8")
+    except Exception as exc:  # pragma: no cover - diagnostic path
+        return [f"cannot load session routing pipeline: {exc}"]
+    for heading in REQUIRED_SESSION_ROUTE_HEADINGS:
+        if heading not in text:
+            errors.append(f"missing session routing route heading: {heading}")
     return errors
 
 
@@ -258,6 +289,7 @@ def main() -> int:
     errors = (
         require_files()
         + parse_json_files()
+        + validate_session_routes()
         + validate_command_registry()
         + check_banned_phrases()
     )
