@@ -25,6 +25,8 @@ The user is the coordinator and goal owner, not the technical verifier for most 
 7. **Domain Adapters** — audit, GitHub repair, prompt engineering, image workflows, and other domains inherit the parent protocol.
 8. **Trust / Provenance / Verification Layer** — governance authority, epistemic support, verification status, and lifecycle status are separate.
 9. **Project / Session Continuity Layer** — structured continuity state preserves decisions, evidence boundaries, risks, open questions, and exact resume prompts across long chats and model handoffs.
+10. **Raw Idea Incubator** — low-friction capture for sudden thoughts, brainstorming fragments, and model-captured raw ideas before they become candidate memory or repository-safe artifacts.
+11. **Command Routing Layer** — lightweight user commands such as `شروع` and `ایده خام` activate repository-defined model behavior without becoming evidence or overriding governance rules.
 
 ## Boot, routing, governance, and continuity layer
 
@@ -45,7 +47,36 @@ The repository defines the architecture layer for starting future model sessions
 13. **Project Continuity Protocol** — `protocols/PROJECT_CONTINUITY_PROTOCOL.md`
 14. **Session Continuity Protocol** — `protocols/SESSION_CONTINUITY_PROTOCOL.md`
 15. **Handover Intake Protocol** — `protocols/HANDOVER_INTAKE_PROTOCOL.md`
-16. **Repository Registry / Tool Map** — `registries/REPOSITORY_REGISTRY.json`
+16. **Command Routing Protocol** — `protocols/COMMAND_ROUTING_PROTOCOL.md`
+17. **Raw Idea Incubator** — `incubator/raw-ideas/`
+18. **Repository Registry / Tool Map** — `registries/REPOSITORY_REGISTRY.json`
+
+## Command-style use
+
+The repository supports lightweight textual commands for future model sessions.
+
+Preferred shape:
+
+```text
+طبق دستور:
+https://github.com/rezahh107/Personal-LLM-Operating-System/
+<command>
+```
+
+Currently documented commands:
+
+- `شروع` — start a general session. Expected response: `آماده‌ام. امروز می‌خوای چکار کنی؟`
+- `ایده خام` — start raw idea capture. Expected response: `آماده‌ام. ایده خامت چیه؟`
+
+Command behavior is defined in `protocols/COMMAND_ROUTING_PROTOCOL.md`. Commands are routing hints, not proof, accepted memory, or permission to bypass governance.
+
+## Raw idea incubator
+
+Raw ideas live in `incubator/raw-ideas/`.
+
+This area is for sudden thoughts, brainstorming fragments, early repository-shaping ideas, and ideas extracted by a model from conversation.
+
+A captured raw idea preserves the core idea before critique, validation, or implementation planning. It is not accepted memory, project policy, protocol, verified claim, final design, or implementation commitment.
 
 ## Start here
 
@@ -54,6 +85,8 @@ Future model sessions should begin with:
 ```text
 AGENTS.md
 protocols/BOOT_PROTOCOL.md
+protocols/COMMAND_ROUTING_PROTOCOL.md when the user invokes a command-style phrase
+incubator/raw-ideas/README.md when the command or task involves raw idea capture
 docs/USER_OPERATING_PROFILE.md
 protocols/START_HERE_FOR_MODELS.md
 protocols/SESSION_ROUTING_PIPELINE.md
@@ -69,7 +102,7 @@ protocols/IDEA_MATURATION_PIPELINE.md when the topic is new or strategic
 ## Current status
 
 ```yaml
-status: project_session_continuity_contract
+status: raw_idea_incubator_and_command_routing_seeded
 scope: personal_llm_orchestration
 primary_user_role: coordinator_orchestrator
 technical_verifier_assumption: false
