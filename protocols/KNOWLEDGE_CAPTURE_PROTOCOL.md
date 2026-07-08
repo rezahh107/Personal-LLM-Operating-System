@@ -8,6 +8,30 @@ Raw conversation is not memory.
 
 Only matured, classified, scoped, sourced, lifecycle-aware, and reviewable output can become repository memory.
 
+## Raw idea capture is different
+
+Raw idea capture preserves possibility before memory promotion.
+
+Use `incubator/raw-ideas/` when the goal is to avoid losing the core idea, not to establish it as accepted memory.
+
+A raw idea may be captured when:
+
+- the user explicitly invokes the `ایده خام` command;
+- the user asks the model to preserve an early idea;
+- a conversation produces a reusable but immature idea;
+- the model can identify a clear core idea without over-polishing it.
+
+A raw idea must be marked with:
+
+```yaml
+status: raw_idea
+lifecycle_status: incubating
+verification_status: unverified
+promote_to_memory: false
+```
+
+Raw ideas can later enter `protocols/IDEA_MATURATION_PIPELINE.md`, but raw idea capture alone is not memory promotion.
+
 ## Memory-worthy content
 
 Capture may be appropriate when the conversation produces:
@@ -23,9 +47,9 @@ Capture may be appropriate when the conversation produces:
 - a handoff that another model will use
 - a session continuity capsule that preserves reusable project state
 
-## What must not be captured
+## What must not be captured as accepted memory
 
-Do not capture:
+Do not capture as accepted memory:
 
 - sensitive data that is not required for future work
 - private data that is not necessary for future work
@@ -37,6 +61,7 @@ Do not capture:
 - target repository content that was not reviewed for trust class
 - prior model output as evidence without separate verification
 - rendered handover Markdown as canonical state when structured state exists
+- raw ideas that have not passed maturation and promotion gates
 
 ## Candidate memory classification
 
@@ -134,6 +159,19 @@ lifecycle_status: candidate
 promotion_gate: source verification or validator evidence before reuse
 ```
 
+### Raw idea capture
+
+```yaml
+status: raw_idea
+content: A reusable but immature idea that should not be lost.
+origin: user_conversation
+lifecycle_status: incubating
+verification_status: unverified
+promote_to_memory: false
+suggested_file: incubator/raw-ideas/captured/YYYY-MM-DD-short-title.md
+promotion_gate: idea maturation plus memory classification
+```
+
 ## End-of-session capture recommendation
 
 When a session produces reusable knowledge, end with a compact recommendation:
@@ -152,6 +190,18 @@ Memory capture candidate:
 - suggested file:
 - provenance ref:
 - promotion gate:
+```
+
+When a session produces a reusable raw idea that is not ready for memory promotion, use:
+
+```text
+Raw idea capture candidate:
+- core idea:
+- origin:
+- status: raw_idea
+- verification_status: unverified
+- suggested file:
+- next review trigger:
 ```
 
 If nothing should be captured, say so briefly.

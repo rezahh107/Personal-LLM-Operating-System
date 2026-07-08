@@ -4,6 +4,7 @@ Purpose: classify the user's request and load the smallest useful context.
 
 ## Routing steps
 
+0. If the user invokes a command-style phrase, apply `protocols/COMMAND_ROUTING_PROTOCOL.md` before ordinary request classification.
 1. Identify the user's immediate goal.
 2. Classify the request type.
 3. Select response depth from `protocols/RESPONSE_DEPTH_POLICY.md`.
@@ -11,7 +12,7 @@ Purpose: classify the user's request and load the smallest useful context.
 5. Classify instruction and evidence authority through `protocols/INSTRUCTION_TRUST_POLICY.md`.
 6. Apply claim-specific evidence requirements through `protocols/VERIFICATION_PROTOCOL.md` when the task makes technical, source, CI, version, architecture, continuity, or security claims.
 7. Produce output in the expected behavior for the route.
-8. Recommend knowledge capture or continuity capture only when the result is memory-worthy or context loss would materially harm continuation.
+8. Recommend knowledge capture, raw idea capture, or continuity capture only when the result is memory-worthy, idea-worthy, or context loss would materially harm continuation.
 
 ## Status dimensions
 
@@ -21,12 +22,63 @@ Keep these separate:
 governance_authority: advisory | accepted_decision | project_contract | frozen_contract
 epistemic_support: unsupported | source_supported | observed | reproduced | test_verified | expert_verified
 verification_status: not_checked | statically_inspected | source_supported | tool_observed | reproduced | test_verified | fixture_verified | externally_reviewed | not_verifiable | insufficient_evidence
-lifecycle_status: candidate | active | stale | superseded | deprecated | rejected | archived
+lifecycle_status: raw_idea | candidate | active | stale | superseded | deprecated | rejected | archived
 ```
 
 Do not collapse them into one status field.
 
 ## Request classes
+
+### command trigger
+
+Use when the user gives a command-style phrase.
+
+Load:
+
+- `protocols/COMMAND_ROUTING_PROTOCOL.md`
+- `registries/COMMAND_REGISTRY.json` for exact command behavior and expected first response
+- `docs/USER_OPERATING_PROFILE.md`
+- additional files only after the command route requires them
+
+Do not:
+
+- invent unknown command behavior
+- treat commands as evidence
+- treat command invocation as permission for destructive actions
+- write repository files unless repository-write scope is explicitly active
+
+Output behavior:
+
+- use `expected_first_response` from `registries/COMMAND_REGISTRY.json` for recognized commands
+- for unknown commands: ask for clarification briefly
+- after the first command response, continue ordinary routing for the user's follow-up task
+
+### raw idea capture
+
+Use when the user explicitly asks to capture a raw idea, uses the `ایده خام` command, or a conversation produces a reusable raw idea that should be preserved before it is matured.
+
+Load:
+
+- `incubator/raw-ideas/README.md`
+- `incubator/raw-ideas/_model_capture_template.md`
+- `protocols/IDEA_MATURATION_PIPELINE.md` only when the user asks to mature, challenge, or operationalize the idea
+- `protocols/KNOWLEDGE_CAPTURE_PROTOCOL.md` only when the idea may become candidate memory
+- `protocols/PROVENANCE_POLICY.md` when preserving source context
+
+Do not:
+
+- over-polish the user's original idea
+- validate the idea during capture
+- promote raw ideas into accepted memory
+- turn raw ideas into policy, protocol, or implementation commitments without a later promotion gate
+
+Output behavior:
+
+- preserve the core idea first
+- mark status as `raw_idea`
+- separate user intent from model interpretation
+- state that verification status is `unverified`
+- suggest or create a file under `incubator/raw-ideas/` when repository-write scope is active
 
 ### quick answer
 
@@ -308,24 +360,24 @@ Output behavior:
 
 ### image workflow
 
-Use when the user asks for image generation, image editing, visual prompt creation, portrait workflow, or visual quality review.
+Use when the user asks for visual workflow support.
 
 Load:
 
 - `registries/REPOSITORY_REGISTRY.json`
-- any relevant image workflow adapter if it exists
-- attached files or image references supplied by the user
+- any relevant visual workflow adapter if it exists
+- attached files or visual references supplied by the user
 - `protocols/INSTRUCTION_TRUST_POLICY.md` for attached artifacts
 
 Do not:
 
-- assume identity changes are allowed
 - convert visual preferences into permanent memory without capture review
+- bypass attached-artifact trust classification
 
 Output behavior:
 
-- image prompt, edit instruction, or visual audit
-- identity and composition constraints when relevant
+- visual prompt, edit instruction, or visual audit
+- composition constraints when relevant
 - candidate memory suggestion if a stable preference emerges
 
 ### general conversation

@@ -25,6 +25,8 @@ The user is the coordinator and goal owner, not the technical verifier for most 
 7. **Domain Adapters** — audit, GitHub repair, prompt engineering, image workflows, and other domains inherit the parent protocol.
 8. **Trust / Provenance / Verification Layer** — governance authority, epistemic support, verification status, and lifecycle status are separate.
 9. **Project / Session Continuity Layer** — structured continuity state preserves decisions, evidence boundaries, risks, open questions, and exact resume prompts across long chats and model handoffs.
+10. **Raw Idea Incubator** — low-friction capture for sudden thoughts, brainstorming fragments, and model-captured raw ideas before they become candidate memory or repository-safe artifacts.
+11. **Command Routing Layer** — lightweight user commands such as `شروع` and `ایده خام` activate repository-defined model behavior without becoming evidence or overriding governance rules.
 
 ## Boot, routing, governance, and continuity layer
 
@@ -45,7 +47,57 @@ The repository defines the architecture layer for starting future model sessions
 13. **Project Continuity Protocol** — `protocols/PROJECT_CONTINUITY_PROTOCOL.md`
 14. **Session Continuity Protocol** — `protocols/SESSION_CONTINUITY_PROTOCOL.md`
 15. **Handover Intake Protocol** — `protocols/HANDOVER_INTAKE_PROTOCOL.md`
-16. **Repository Registry / Tool Map** — `registries/REPOSITORY_REGISTRY.json`
+16. **Command Routing Protocol** — `protocols/COMMAND_ROUTING_PROTOCOL.md`
+17. **Command Registry** — `registries/COMMAND_REGISTRY.json`
+18. **Command Registry Schema** — `schemas/command-registry.schema.json`
+19. **Commands and Raw Ideas Guide** — `docs/COMMANDS_AND_RAW_IDEAS.md`
+20. **Raw Idea Incubator** — `incubator/raw-ideas/`
+21. **Repository Registry / Tool Map** — `registries/REPOSITORY_REGISTRY.json`
+
+## Repository-wide command protocol
+
+The repository supports lightweight textual commands for future model sessions.
+
+Preferred shape:
+
+```text
+طبق دستور:
+https://github.com/rezahh107/Personal-LLM-Operating-System/
+<command>
+```
+
+This protocol is intended to work across the whole repository. It can be used before any domain-specific work, including audit, GitHub repair, prompt engineering, image workflow, research, document production, Elementor/EV4 work, or future adapters.
+
+The command selects the first behavior mode. After that, normal session routing still applies.
+
+The canonical machine-readable command definitions live in `registries/COMMAND_REGISTRY.json`. Prose docs mirror the registry for readability.
+
+Currently seeded commands:
+
+- `شروع` — start a general session.
+- `ایده خام` — start raw idea capture.
+
+Exact first responses must come from `registries/COMMAND_REGISTRY.json`.
+
+Command behavior is applied through `protocols/COMMAND_ROUTING_PROTOCOL.md`. The short user-facing guide is `docs/COMMANDS_AND_RAW_IDEAS.md`.
+
+Commands are routing hints. They are not evidence, accepted memory, proof, executable automation, or permission to bypass governance, verification, instruction-trust classification, or repository-write boundaries.
+
+## Raw idea incubator
+
+Raw ideas live in `incubator/raw-ideas/`.
+
+This area is for sudden thoughts, brainstorming fragments, early repository-shaping ideas, and ideas extracted by a model from conversation.
+
+A captured raw idea preserves the core idea before critique, validation, or implementation planning. It is not accepted memory, project policy, protocol, verified claim, final design, or implementation commitment.
+
+Use:
+
+- `incubator/raw-ideas/INBOX.md` for fast, low-friction notes.
+- `incubator/raw-ideas/captured/` for model-captured standalone records.
+- `incubator/raw-ideas/_model_capture_template.md` as the preferred standalone record format.
+
+Raw ideas may later enter `protocols/IDEA_MATURATION_PIPELINE.md`, but raw idea capture itself is not memory promotion.
 
 ## Start here
 
@@ -54,6 +106,10 @@ Future model sessions should begin with:
 ```text
 AGENTS.md
 protocols/BOOT_PROTOCOL.md
+protocols/COMMAND_ROUTING_PROTOCOL.md when the user invokes a command-style phrase
+registries/COMMAND_REGISTRY.json when exact command behavior is needed
+docs/COMMANDS_AND_RAW_IDEAS.md when the user asks what commands or raw idea capture mean
+incubator/raw-ideas/README.md when the command or task involves raw idea capture
 docs/USER_OPERATING_PROFILE.md
 protocols/START_HERE_FOR_MODELS.md
 protocols/SESSION_ROUTING_PIPELINE.md
@@ -69,7 +125,7 @@ protocols/IDEA_MATURATION_PIPELINE.md when the topic is new or strategic
 ## Current status
 
 ```yaml
-status: project_session_continuity_contract
+status: raw_idea_incubator_and_command_routing_seeded
 scope: personal_llm_orchestration
 primary_user_role: coordinator_orchestrator
 technical_verifier_assumption: false

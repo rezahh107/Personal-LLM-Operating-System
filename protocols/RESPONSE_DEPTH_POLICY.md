@@ -4,6 +4,34 @@ Purpose: choose how much reasoning, evidence, and structure a response needs.
 
 ## Depth levels
 
+### command-first
+
+Use for:
+
+- recognized command-style invocations;
+- `شروع` command;
+- `ایده خام` command;
+- repository-wide command routing before a domain task is known.
+
+Do not use for:
+
+- full repository explanation unless asked;
+- domain audit;
+- technical verification;
+- implementation work;
+- memory promotion.
+
+Evidence behavior:
+
+- command itself is a routing hint, not evidence;
+- no technical evidence required for the first command response;
+- after the user provides the actual task, reroute and select the appropriate depth.
+
+Expected behavior:
+
+- `شروع` → `آماده‌ام. امروز می‌خوای چکار کنی؟`
+- `ایده خام` → `آماده‌ام. ایده خامت چیه؟`
+
 ### quick
 
 Use for:
@@ -13,6 +41,7 @@ Use for:
 - short comparisons
 - small wording help
 - obvious next actions
+- initial raw idea intake after the command response
 
 Do not use for:
 
@@ -20,6 +49,7 @@ Do not use for:
 - high-risk claims
 - current-source claims
 - strategic architecture decisions
+- promoting raw ideas into memory
 
 Evidence behavior:
 
@@ -33,6 +63,11 @@ Idea maturation:
 
 - not required
 
+Raw idea behavior:
+
+- preserve the core idea first;
+- do not critique or mature unless asked.
+
 ### standard
 
 Use for:
@@ -42,6 +77,7 @@ Use for:
 - moderate repository guidance
 - practical checklists
 - non-critical planning
+- explaining command usage or raw idea capture
 
 Do not use for:
 
@@ -74,12 +110,15 @@ Use for:
 - security-sensitive reasoning
 - multi-file document design
 - claims that may affect downstream models
+- adding or changing command protocol behavior
+- changing raw idea capture boundaries
 
 Do not use for:
 
 - casual questions
 - simple edits
 - boot-only mode
+- command-first response
 
 Evidence behavior:
 
@@ -103,12 +142,14 @@ Use for:
 - creating a repeatable model workflow
 - deciding whether new knowledge should become memory
 - resolving competing frameworks or concepts
+- promoting a raw idea beyond `incubator/raw-ideas/`
 
 Do not use for:
 
 - quick explanations
 - small operational fixes
 - already-scoped implementation tasks
+- preserving the initial raw idea before it has been captured
 
 Evidence behavior:
 
@@ -129,6 +170,7 @@ Idea maturation:
 
 When unsure:
 
+- choose `command-first` for recognized command-style prompts
 - choose `quick` for simple understanding
 - choose `standard` for normal useful work
 - choose `deep` for technical verification or repository work

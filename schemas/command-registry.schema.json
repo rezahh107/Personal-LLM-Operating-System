@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/rezahh107/Personal-LLM-Operating-System/schemas/command-registry.schema.json",
+  "title": "Command Registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "status",
+    "registry_role",
+    "last_reviewed",
+    "scope",
+    "principle",
+    "invocation_shape",
+    "defaults",
+    "commands"
+  ],
+  "properties": {
+    "version": { "type": "string", "minLength": 1 },
+    "status": { "type": "string", "enum": ["candidate", "active", "deprecated"] },
+    "registry_role": { "type": "string", "const": "canonical_command_definition_source" },
+    "last_reviewed": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+    "scope": { "type": "string", "minLength": 1 },
+    "principle": { "type": "string", "minLength": 1 },
+    "invocation_shape": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "preferred_prefix",
+        "repository_url",
+        "command_line",
+        "whitespace_policy",
+        "repository_scope_policy"
+      ],
+      "properties": {
+        "preferred_prefix": { "type": "string", "minLength": 1 },
+        "repository_url": { "type": "string", "minLength": 1 },
+        "command_line": { "type": "string", "minLength": 1 },
+        "whitespace_policy": { "type": "string", "minLength": 1 },
+        "repository_scope_policy": { "type": "string", "minLength": 1 }
+      }
+    },
+    "defaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "destructive_actions_allowed",
+        "repository_write_allowed_without_explicit_scope",
+        "treat_command_as_evidence",
+        "bypass_instruction_trust_policy",
+        "bypass_verification_protocol",
+        "unknown_command_behavior"
+      ],
+      "properties": {
+        "destructive_actions_allowed": { "type": "boolean" },
+        "repository_write_allowed_without_explicit_scope": { "type": "boolean" },
+        "treat_command_as_evidence": { "type": "boolean" },
+        "bypass_instruction_trust_policy": { "type": "boolean" },
+        "bypass_verification_protocol": { "type": "boolean" },
+        "unknown_command_behavior": { "type": "string", "minLength": 1 }
+      }
+    },
+    "commands": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "id",
+          "command",
+          "aliases",
+          "language",
+          "status",
+          "route",
+          "intent",
+          "expected_first_response",
+          "allowed_actions",
+          "write_scope_required",
+          "load_after_response",
+          "boundaries"
+        ],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "command": { "type": "string", "minLength": 1 },
+          "aliases": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "language": { "type": "string", "minLength": 1 },
+          "status": { "type": "string", "enum": ["candidate", "active", "deprecated"] },
+          "route": { "type": "string", "minLength": 1 },
+          "intent": { "type": "string", "minLength": 1 },
+          "expected_first_response": { "type": "string", "minLength": 1 },
+          "allowed_actions": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "write_scope_required": { "type": "boolean" },
+          "load_after_response": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "boundaries": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    }
+  }
+}
