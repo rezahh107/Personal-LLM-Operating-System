@@ -18,6 +18,22 @@ The repository URL tells the model which operating layer to use. The command tel
 
 Commands are not a shell, CLI, executable script, proof source, or permission system. They are routing hints for model behavior.
 
+## Source of truth
+
+The canonical machine-readable source for command definitions is:
+
+```text
+registries/COMMAND_REGISTRY.json
+```
+
+The schema is:
+
+```text
+schemas/command-registry.schema.json
+```
+
+This document is an explanatory guide. If this guide and the registry disagree, treat the registry as the command-definition source and report the documentation drift.
+
 ## Repository-wide applicability
 
 The command protocol is repository-wide.
@@ -34,29 +50,29 @@ https://github.com/rezahh107/Personal-LLM-Operating-System/
 ایده خام
 ```
 
-The model should respond:
-
-```text
-آماده‌ام. ایده خامت چیه؟
-```
+The model should respond with the `expected_first_response` defined for that command in `registries/COMMAND_REGISTRY.json`.
 
 Then the user can describe an idea about any domain. The model should preserve the core idea first and only load domain-specific context if the follow-up task needs it.
 
 ## Current commands
 
-| Command | Expected first response | Purpose |
-|---|---|---|
-| `شروع` | `آماده‌ام. امروز می‌خوای چکار کنی؟` | Start a general session using this repository as operating context. |
-| `ایده خام` | `آماده‌ام. ایده خامت چیه؟` | Start raw idea capture before critique, validation, or maturation. |
+Current commands are defined in `registries/COMMAND_REGISTRY.json`.
 
-The canonical behavior for commands is defined in `protocols/COMMAND_ROUTING_PROTOCOL.md`.
+At this seed stage, the active user-facing commands are:
+
+| Command | Purpose |
+|---|---|
+| `شروع` | Start a general session using this repository as operating context. |
+| `ایده خام` | Start raw idea capture before critique, validation, or maturation. |
+
+The canonical behavior for commands is defined by the registry and applied through `protocols/COMMAND_ROUTING_PROTOCOL.md`.
 
 ## How models should handle commands
 
 When a command is recognized:
 
 1. Apply `protocols/COMMAND_ROUTING_PROTOCOL.md` first.
-2. Give the exact expected first response when defined.
+2. Read the exact expected first response from `registries/COMMAND_REGISTRY.json`.
 3. Do not summarize the repository unless the command asks for it.
 4. Do not invent behavior for unknown commands.
 5. Do not treat the command as evidence.
@@ -150,8 +166,8 @@ Use `captured/` when:
 
 ## Future command expansion
 
-All future command-style behaviors should be documented through `protocols/COMMAND_ROUTING_PROTOCOL.md` first.
+All future command-style behaviors must be defined in `registries/COMMAND_REGISTRY.json` first.
 
-If commands grow beyond a few entries, add a machine-readable registry instead of scattering command definitions across unrelated files.
+After the registry is updated, update `protocols/COMMAND_ROUTING_PROTOCOL.md` and this guide only as explanatory mirrors.
 
-Until a registry exists, this document and `protocols/COMMAND_ROUTING_PROTOCOL.md` are the human-readable command reference.
+The foundation validator checks the registry for required structure, duplicate command names and aliases, and the two seed commands.
