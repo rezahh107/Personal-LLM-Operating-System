@@ -48,9 +48,11 @@ The repository defines the architecture layer for starting future model sessions
 14. **Session Continuity Protocol** — `protocols/SESSION_CONTINUITY_PROTOCOL.md`
 15. **Handover Intake Protocol** — `protocols/HANDOVER_INTAKE_PROTOCOL.md`
 16. **Command Routing Protocol** — `protocols/COMMAND_ROUTING_PROTOCOL.md`
-17. **Commands and Raw Ideas Guide** — `docs/COMMANDS_AND_RAW_IDEAS.md`
-18. **Raw Idea Incubator** — `incubator/raw-ideas/`
-19. **Repository Registry / Tool Map** — `registries/REPOSITORY_REGISTRY.json`
+17. **Command Registry** — `registries/COMMAND_REGISTRY.json`
+18. **Command Registry Schema** — `schemas/command-registry.schema.json`
+19. **Commands and Raw Ideas Guide** — `docs/COMMANDS_AND_RAW_IDEAS.md`
+20. **Raw Idea Incubator** — `incubator/raw-ideas/`
+21. **Repository Registry / Tool Map** — `registries/REPOSITORY_REGISTRY.json`
 
 ## Repository-wide command protocol
 
@@ -68,12 +70,16 @@ This protocol is intended to work across the whole repository. It can be used be
 
 The command selects the first behavior mode. After that, normal session routing still applies.
 
-Currently documented commands:
+The canonical machine-readable command definitions live in `registries/COMMAND_REGISTRY.json`. Prose docs mirror the registry for readability.
 
-- `شروع` — start a general session. Expected response: `آماده‌ام. امروز می‌خوای چکار کنی؟`
-- `ایده خام` — start raw idea capture. Expected response: `آماده‌ام. ایده خامت چیه؟`
+Currently seeded commands:
 
-Command behavior is defined in `protocols/COMMAND_ROUTING_PROTOCOL.md`. The short user-facing guide is `docs/COMMANDS_AND_RAW_IDEAS.md`.
+- `شروع` — start a general session.
+- `ایده خام` — start raw idea capture.
+
+Exact first responses must come from `registries/COMMAND_REGISTRY.json`.
+
+Command behavior is applied through `protocols/COMMAND_ROUTING_PROTOCOL.md`. The short user-facing guide is `docs/COMMANDS_AND_RAW_IDEAS.md`.
 
 Commands are routing hints. They are not evidence, accepted memory, proof, executable automation, or permission to bypass governance, verification, instruction-trust classification, or repository-write boundaries.
 
@@ -101,6 +107,7 @@ Future model sessions should begin with:
 AGENTS.md
 protocols/BOOT_PROTOCOL.md
 protocols/COMMAND_ROUTING_PROTOCOL.md when the user invokes a command-style phrase
+registries/COMMAND_REGISTRY.json when exact command behavior is needed
 docs/COMMANDS_AND_RAW_IDEAS.md when the user asks what commands or raw idea capture mean
 incubator/raw-ideas/README.md when the command or task involves raw idea capture
 docs/USER_OPERATING_PROFILE.md
