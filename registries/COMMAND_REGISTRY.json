@@ -1,0 +1,87 @@
+{
+  "version": "0.1.0",
+  "status": "active",
+  "registry_role": "canonical_command_definition_source",
+  "last_reviewed": "2026-07-08",
+  "scope": "repository_wide_model_command_routing",
+  "principle": "Commands are routing hints, not evidence, automation authority, memory promotion, or repository-write permission.",
+  "invocation_shape": {
+    "preferred_prefix": "طبق دستور:",
+    "repository_url": "https://github.com/rezahh107/Personal-LLM-Operating-System/",
+    "command_line": "<command>",
+    "whitespace_policy": "ignore_surrounding_blank_lines_and_extra_spaces",
+    "repository_scope_policy": "applies_before_domain_specific_routing"
+  },
+  "defaults": {
+    "destructive_actions_allowed": false,
+    "repository_write_allowed_without_explicit_scope": false,
+    "treat_command_as_evidence": false,
+    "bypass_instruction_trust_policy": false,
+    "bypass_verification_protocol": false,
+    "unknown_command_behavior": "ask_brief_clarifying_question"
+  },
+  "commands": [
+    {
+      "id": "cmd.start.v1",
+      "command": "شروع",
+      "aliases": [],
+      "language": "fa",
+      "status": "active",
+      "route": "boot_plus_task_intake",
+      "intent": "Start a general model session using this repository as operating context.",
+      "expected_first_response": "آماده‌ام. امروز می‌خوای چکار کنی؟",
+      "allowed_actions": [
+        "respond_with_expected_first_response",
+        "wait_for_user_task",
+        "route_follow_up_task"
+      ],
+      "write_scope_required": false,
+      "load_after_response": [
+        "protocols/SESSION_ROUTING_PIPELINE.md",
+        "protocols/RESPONSE_DEPTH_POLICY.md",
+        "protocols/CONTEXT_LOADING_POLICY.md"
+      ],
+      "boundaries": [
+        "do_not_summarize_repository_unless_asked",
+        "do_not_load_domain_context_before_task_is_known",
+        "do_not_treat_command_as_evidence"
+      ]
+    },
+    {
+      "id": "cmd.raw_idea.v1",
+      "command": "ایده خام",
+      "aliases": [],
+      "language": "fa",
+      "status": "active",
+      "route": "raw_idea_capture",
+      "intent": "Start low-friction raw idea capture before critique, validation, maturation, or implementation planning.",
+      "expected_first_response": "آماده‌ام. ایده خامت چیه؟",
+      "allowed_actions": [
+        "respond_with_expected_first_response",
+        "ask_for_raw_idea",
+        "preserve_core_idea",
+        "propose_raw_idea_record",
+        "create_raw_idea_record_when_write_scope_is_active"
+      ],
+      "write_scope_required": false,
+      "conditional_write_scope": "repository_write_required_to_create_or_modify_files",
+      "load_after_response": [
+        "incubator/raw-ideas/README.md",
+        "incubator/raw-ideas/_model_capture_template.md",
+        "protocols/SESSION_ROUTING_PIPELINE.md"
+      ],
+      "raw_idea_defaults": {
+        "status": "raw_idea",
+        "lifecycle_status": "incubating",
+        "verification_status": "unverified",
+        "promote_to_memory": false
+      },
+      "boundaries": [
+        "preserve_core_idea_before_critique",
+        "do_not_validate_during_capture",
+        "do_not_promote_to_memory_without_maturation_gate",
+        "do_not_treat_raw_idea_as_policy_protocol_or_implementation_commitment"
+      ]
+    }
+  ]
+}
