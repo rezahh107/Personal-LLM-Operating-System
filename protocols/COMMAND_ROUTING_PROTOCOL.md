@@ -1,12 +1,26 @@
 # Command Routing Protocol
 
-Purpose: define lightweight command-style phrases that activate repository-defined model behavior.
+Purpose: define how lightweight command-style phrases activate repository-defined model behavior.
+
+## Source of truth
+
+The machine-readable source of truth for command definitions is:
+
+```text
+registries/COMMAND_REGISTRY.json
+```
+
+This protocol explains how models should apply that registry.
+
+Do not add, rename, deprecate, or change a command only in prose. Update `registries/COMMAND_REGISTRY.json` first, then update explanatory documents that mirror it.
+
+`schemas/command-registry.schema.json` defines the registry shape. `scripts/validate_foundation.py` performs dependency-free structural checks for the live registry.
 
 ## Scope
 
 This protocol covers non-destructive text commands written by the user in a model session, usually after a repository reference.
 
-It does not define a shell, CLI, executable automation system, or permission to modify files without user-approved repository-write scope.
+It does not define a shell, CLI, executable automation system, proof source, or permission to modify files without user-approved repository-write scope.
 
 ## Repository-wide rule
 
@@ -42,45 +56,16 @@ The repository URL tells the model which operating layer to use. The command lin
 
 If the command includes a later domain topic, route the command first, then classify the domain task normally.
 
-## Current commands
+## Current active commands
 
-### `شروع`
+The canonical current commands are listed in `registries/COMMAND_REGISTRY.json`.
 
-Intent: start a general model session using this repository as operating context.
+At the time of this protocol seed, the active commands are:
 
-Expected response:
+- `شروع` — starts general task intake.
+- `ایده خام` — starts raw idea capture.
 
-```text
-آماده‌ام. امروز می‌خوای چکار کنی؟
-```
-
-Behavior:
-
-1. Enter boot plus task-intake mode.
-2. Do not summarize the repository unless asked.
-3. Wait for the user's task.
-4. Load deeper context only after the task is known.
-5. After the user gives the task, route it through `protocols/SESSION_ROUTING_PIPELINE.md`.
-
-### `ایده خام`
-
-Intent: start low-friction raw idea capture.
-
-Expected response:
-
-```text
-آماده‌ام. ایده خامت چیه؟
-```
-
-Behavior:
-
-1. Ask for the raw idea without over-framing it.
-2. Preserve the user's core idea first.
-3. Treat the raw idea as applicable to any domain unless the user narrows it.
-4. After enough context is available, propose or create a raw idea record under `incubator/raw-ideas/` when repository-write scope is active.
-5. If repository-write scope is not active, provide a ready-to-save raw idea record.
-6. Mark the captured item as `status: raw_idea` and `verification_status: unverified`.
-7. Do not promote the idea into accepted memory, policy, protocol, or implementation without a separate promotion gate.
+Exact first responses must come from the registry field `expected_first_response`.
 
 ## Command handling rules
 
@@ -91,7 +76,7 @@ Behavior:
 5. If the command is unknown, ask for clarification and do not invent command behavior.
 6. If the model cannot access the repository, it should still follow the visible command text when possible and state that repository files were not inspected.
 7. If command behavior conflicts with another protocol, report the conflict and follow the higher-authority source.
-8. Command definitions should not be duplicated across unrelated files; use this protocol as the canonical command behavior reference until a registry exists.
+8. Command definitions should not be duplicated as independent truth across unrelated files; prose documents may mirror the registry only for readability.
 
 ## Raw idea command boundary
 
@@ -122,19 +107,13 @@ The user-facing and model-facing overview is `docs/COMMANDS_AND_RAW_IDEAS.md`.
 
 Use that document when a model needs a short explanation of command-style usage and raw idea capture.
 
-## Future extension path
+## Registry extension path
 
-If commands grow beyond a few entries, add a machine-readable command registry with at least:
+When adding a new command:
 
-```yaml
-command: string
-aliases: list[string]
-intent: string
-expected_response: string
-route: string
-allowed_actions: list[string]
-write_scope_required: boolean
-status: candidate | active | deprecated
-```
-
-Until such a registry exists, this protocol is the canonical human-readable source for command behavior.
+1. Add it to `registries/COMMAND_REGISTRY.json`.
+2. Preserve unique `id`, `command`, and `aliases`.
+3. Define `route`, `intent`, `expected_first_response`, `allowed_actions`, `write_scope_required`, `load_after_response`, and `boundaries`.
+4. Update docs only as mirrors of the registry.
+5. Run `python3 scripts/validate_foundation.py`.
+6. Do not claim validation passed unless the command was actually run and passed.
